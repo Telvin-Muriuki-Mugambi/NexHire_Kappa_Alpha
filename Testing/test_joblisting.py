@@ -14,3 +14,7 @@ def listing():
 		"mid",
 		"FULL_TIME",
 	)
+
+#Test to ensure all the job listings created result to a pending status
+def test_new_listing_defaults_to_pending(listing):
+	assert listing.status == "PENDING"
