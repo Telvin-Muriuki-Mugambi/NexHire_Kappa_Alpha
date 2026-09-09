@@ -59,3 +59,14 @@ def test_does_not_match_when_a_filter_fails(listing, filters):
 #Test to empty the filters
 def test_empty_filters_match_every_listing(listing):
 	assert listing.matches_criteria({})
+
+#Test to ensure no negative amount is inserted
+def test_negative_pay_rate_is_rejected():
+	with pytest.raises(ValueError):
+		JobListing("Role", "Description", "Nairobi", [], -1, "ENTRY", "FULL_TIME")
+
+#Test to reject invalid experience level
+@pytest.mark.parametrize("experience_level", ["intern", "expert", ""])
+def test_invalid_experience_level_is_rejected(experience_level):
+	with pytest.raises(ValueError):
+		JobListing("Role", "Description", "Nairobi", [], 1000, experience_level, "FULL_TIME")
