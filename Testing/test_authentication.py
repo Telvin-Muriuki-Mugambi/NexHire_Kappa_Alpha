@@ -39,3 +39,10 @@ def test_duplicate_email_is_rejected(auth):
 
     with pytest.raises(DuplicateEmailError):
         register_user(auth)
+
+#Test to see if the admin is recognized as a role
+def test_admin_role_is_recognized(auth):
+    register_user(auth, "ADMIN")
+    auth.login("ada@example.com", "secret")
+
+    assert auth.is_admin()
