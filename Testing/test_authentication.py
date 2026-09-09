@@ -16,3 +16,8 @@ def test_register_hashes_password_before_storing(auth):
     assert user._password_hash != "secret"
     assert user.verify_password("secret")
 
+def test_login_returns_user_and_sets_current_user(auth):
+    user = register_user(auth)
+
+    assert auth.login("ada@example.com", "secret") is user
+    assert auth.current_user is user
