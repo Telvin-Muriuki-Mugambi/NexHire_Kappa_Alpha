@@ -10,4 +10,9 @@ def auth():
 def register_user(auth, role="JOB_SEEKER"):
     return auth.register("Ada", "ada@example.com", "0712345678", "secret", role)
 
+def test_register_hashes_password_before_storing(auth):
+    user = register_user(auth)
+
+    assert user._password_hash != "secret"
+    assert user.verify_password("secret")
 
