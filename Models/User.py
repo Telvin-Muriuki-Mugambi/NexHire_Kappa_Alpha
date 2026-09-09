@@ -8,10 +8,12 @@ class User:
         self.email = email
         self.phone_number = phone
         self.role = None
-        self._password = password
+        self._password_hash = self._hash_password(password)
 
-    def _hash_password(self):
-        return hashlib.sha256(self._password.encode()).hexdigest()
+    def _hash_password(self, password=None):
+        if password is None:
+            return self._password_hash
+        return hashlib.sha256(password.encode()).hexdigest()
 
-    # def verify_password(self, password):
-    #     return self._password_hash == self._hash_password(password)
+    def verify_password(self, password = None):
+        return self._password_hash == self._hash_password(password)
