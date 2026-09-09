@@ -76,3 +76,12 @@ def test_role_helpers_support_admin_employer_and_job_seeker(auth):
 
     assert auth.has_role("employer")
     assert not auth.is_admin()
+
+def test_role_helpers_support_admin_employer_and_job_seeker(auth):
+    register_user(auth, "EMPLOYER")
+    auth.login("ada@example.com", "secret")
+
+    assert auth.has_role("employer")
+    assert not auth.is_admin()
+
+    
