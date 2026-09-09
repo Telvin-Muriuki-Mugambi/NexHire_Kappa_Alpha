@@ -30,3 +30,32 @@ def test_reject_changes_status(listing):
 	listing.reject()
 
 	assert listing.status == "REJECTED"
+
+#Test to ensure filtering function works. Filters using location, skills, expected minimum pay, and job availability
+def test_matches_location_skills_pay_and_availability(listing):
+	filters = {
+		"location": "nai",
+		"skills": ["python"],
+		"min_pay": 4000,
+		"availability": "full_time",
+	}
+
+	assert listing.matches_criteria(filters)
+
+@pytest.mark.parametrize(
+	"filters",
+	[
+		{"location": "Mombasa"},
+		{"skills": ["Java"]},
+		{"min_pay": 6000},
+		{"availability": "PART_TIME"},
+	],
+)
+
+#Test to check when criteria is not met
+def test_does_not_match_when_a_filter_fails(listing, filters):
+	assert not listing.matches_criteria(filters)
+
+#Test to empty the filters
+def test_empty_filters_match_every_listing(listing):
+	assert listing.matches_criteria({})
