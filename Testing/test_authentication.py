@@ -21,3 +21,11 @@ def test_login_returns_user_and_sets_current_user(auth):
 
     assert auth.login("ada@example.com", "secret") is user
     assert auth.current_user is user
+
+def test_logout_clears_current_user(auth):
+    register_user(auth)
+    auth.login("ada@example.com", "secret")
+
+    auth.logout()
+
+    assert auth.current_user is None
