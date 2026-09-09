@@ -46,3 +46,33 @@ def test_admin_role_is_recognized(auth):
     auth.login("ada@example.com", "secret")
 
     assert auth.is_admin()
+
+#Test invalid logins are rejected. Used parametrized testing to test multiple entries
+@pytest.mark.parametrize("email,password", [("missing@example.com", "secret"), ("ada@example.com", "wrong")])
+def test_invalid_login_is_rejected(auth, email, password):
+    register_user(auth)
+
+    with pytest.raises(AuthenticationError):
+        auth.login(email, password)
+
+    assert auth.current_user is None
+
+#Test if an action requires a specific role 
+def test_protected_action_requires_a_logged_in_user(auth):
+    with pytest.raises(AuthorizationError):
+        auth.require_role("EMPLOYER")
+
+#Test the action rejects the wrong role
+def test_protected_action_rejects_the_wrong_role(auth):
+    register_user(auth, "JOB_SEEKER")
+    auth.login("ada@example.com", "secret")
+
+    with pytest.raises(AuthorizationError):
+        auth.require_role("EMPLOYER")
+
+def test_role_helpers_support_admin_employer_and_job_seeker(auth):
+    register_user(auth, "EMPLOYER")
+    auth.login("ada@example.com", "secret")
+
+    assert auth.has_role("employer")
+    assert not auth.is_admin()
