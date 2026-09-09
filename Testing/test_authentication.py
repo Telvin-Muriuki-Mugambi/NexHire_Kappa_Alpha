@@ -1,2 +1,4 @@
-#Test file for the authentication
-print("authentication test")
+import pytest
+
+def test_authentication():
+    pass
