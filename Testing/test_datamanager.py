@@ -1,80 +1,105 @@
 import json
-from pathlib import Path
 
+import pytest
 
+from Models.DataManager import DataManager
 from Models.JobListing import JobListing
 from Models.User import User
 
 
+class TestDataManager:
+	@pytest.fixture
+	def manager(self, tmp_path):
+		return DataManager(tmp_path)
 
+	@pytest.fixture
+	def user(self):
+		return User("Ada", "ada@example.com", "0712345678", "secret")
 
-class DataManager:
-   """Persist users and job listings as JSON collections."""
+	@pytest.fixture
+	def job(self):
+		return JobListing(
+			"Python Developer",
+			"Build APIs",
+			"Nairobi",
+			["Python"],
+			5000,
+			"mid",
+			"FULL_TIME",
+		)
 
+	def test_initialization_creates_json_files(self, manager):
+		assert manager.users_file.exists()
+		assert manager.jobs_file.exists()
+		assert json.loads(manager.users_file.read_text()) == []
+		assert json.loads(manager.jobs_file.read_text()) == []
 
-   def __init__(self, data_dir):
-       self.data_dir = Path(data_dir)
-       self.data_dir.mkdir(parents=True, exist_ok=True)
-       self.users_file = self.data_dir / "users.json"
-       self.jobs_file = self.data_dir / "jobs.json"
-       self._ensure_file(self.users_file)
-       self._ensure_file(self.jobs_file)
+	def test_save_user_writes_structured_payload(self, manager, user):
+		manager.save_user(user)
 
+		payload = json.loads(manager.users_file.read_text())[0]
+		assert payload["user_id"] == user.user_id
+		assert payload["email"] == user.email
+		assert payload["password_hash"] == user._password_hash
 
-   @staticmethod
-   def _ensure_file(path):
-       if not path.exists():
-           path.write_text("[]", encoding="utf-8")
+	def test_save_job_writes_structured_payload(self, manager, job):
+		manager.save_job(job)
 
+		assert json.loads(manager.jobs_file.read_text())[0] == job.to_dict()
 
-   @staticmethod
-   def _read_records(path):
-       try:
-           content = path.read_text(encoding="utf-8")
-           if not content.strip():
-               return []
-           records = json.loads(content)
-       except (FileNotFoundError, json.JSONDecodeError):
-           return []
-       return records if isinstance(records, list) else []
+	def test_load_users_recreates_user_instance(self, manager, user):
+		manager.save_user(user)
 
+		loaded = manager.load_users()
+		assert isinstance(loaded[0], User)
+		assert loaded[0].to_dict() == user.to_dict()
+		assert loaded[0].verify_password("secret")
 
-   @staticmethod
-   def _write_records(path, records):
-       path.write_text(json.dumps(records, indent=2), encoding="utf-8")
+	def test_load_jobs_recreates_job_instance(self, manager, job):
+		manager.save_job(job)
 
+		loaded = manager.load_jobs()
+		assert isinstance(loaded[0], JobListing)
+		assert loaded[0].to_dict() == job.to_dict()
 
-   def save_user(self, user):
-       records = self._read_records(self.users_file)
-       payload = user.to_dict() if hasattr(user, "to_dict") else user
-       for index, record in enumerate(records):
-           if record.get("user_id") == payload.get("user_id"):
-               records[index] = payload
-               break
-       else:
-           records.append(payload)
-       self._write_records(self.users_file, records)
+	def test_save_updates_existing_record(self, manager, job):
+		manager.save_job(job)
+		job.status = "APPROVED"
+		manager.save_job(job)
 
+		records = json.loads(manager.jobs_file.read_text())
+		assert len(records) == 1
+		assert records[0]["status"] == "APPROVED"
 
-   def save_job(self, job):
-       records = self._read_records(self.jobs_file)
-       payload = job.to_dict() if hasattr(job, "to_dict") else job
-       for index, record in enumerate(records):
-           if record.get("job_id") == payload.get("job_id"):
-               records[index] = payload
-               break
-       else:
-           records.append(payload)
-       self._write_records(self.jobs_file, records)
+	def test_save_appends_new_records(self, manager, job):
+		manager.save_job(job)
+		second_job = JobListing(
+			"Data Analyst",
+			"Analyze reports",
+			"Mombasa",
+			["SQL"],
+			4000,
+			"entry",
+			"PART_TIME",
+		)
+		manager.save_job(second_job)
 
+		assert len(json.loads(manager.jobs_file.read_text())) == 2
 
-   def load_users(self):
-       return [User.from_dict(record) for record in self._read_records(self.users_file)]
+	def test_empty_and_corrupt_files_load_as_empty(self, manager):
+		manager.users_file.write_text("")
+		manager.jobs_file.write_text("{not valid json")
 
+		assert manager.load_users() == []
+		assert manager.load_jobs() == []
 
-   def load_jobs(self):
-       return [JobListing.from_dict(record) for record in self._read_records(self.jobs_file)]
+	def test_missing_file_is_handled_cleanly(self, manager):
+		manager.users_file.unlink()
 
+		assert manager.load_users() == []
 
-   def get_job_by_id(self, job_id):
-       return next((job for job in self.load_jobs() if job.job_id == job_id), None)
+	def test_get_job_by_id_returns_job_or_none(self, manager, job):
+		manager.save_job(job)
+
+		assert manager.get_job_by_id(job.job_id).job_id == job.job_id
+		assert manager.get_job_by_id(999999) is None
