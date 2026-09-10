@@ -5,7 +5,7 @@ from pathlib import Path
 from Models.User import User
 #Provides access to the user methods
 
-class DataManager:
+class TestDataManager:
     # Test file used to test for persistence users and job listings as JSON.
 
     #Test case to check exisitence of files by checking the path
@@ -51,7 +51,7 @@ class DataManager:
         else:
             records.append(payload)
         self._write_records(self.users_file, records)
-        
+
     #Test to load the users from the JSON file
     def load_users(self):
         return [User.from_dict(record) for record in self._read_records(self.users_file)]
