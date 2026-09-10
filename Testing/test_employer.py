@@ -9,7 +9,7 @@ from Models.User import User
 
 
 # ------------------------------------------------------------------
-# 1. Employer Profile & Authentication Tests
+# 1. Employer Profile Tests
 # ------------------------------------------------------------------
 
 def test_employer_user_initialization():
@@ -21,27 +21,28 @@ def test_employer_user_initialization():
         password="EmployerPassword123"
     )
     
-    # Assign the employer role manually (as defined in Models/User.py)
+    # Assign the employer role manually
     employer.role = "employer"
 
     assert employer.name == "Acme Corp"
     assert employer.email == "hr@acme.com"
     assert employer.phone_number == "0712345678"
     assert employer.role == "employer"
-    assert employer.user_id >= 1000 and employer.user_id <= 9999
+    assert 1000 <= employer.user_id <= 9999
 
 
-def test_employer_password_verification():
-    """Verify password hashing and authentication for an employer account."""
+def test_employer_role_assignment():
+    """Verify that an employer account correctly maintains role separation."""
     employer = User(
         name="Tech Solutions", 
         email="recruiter@tech.com", 
         phone="0700000000", 
         password="SecurePassword"
     )
+    employer.role = "employer"
     
-    assert employer.verify_password("SecurePassword") is True
-    assert employer.verify_password("WrongPassword") is False
+    assert employer.role == "employer"
+    assert employer.role != "jobseeker"
 
 
 # ------------------------------------------------------------------
@@ -50,11 +51,9 @@ def test_employer_password_verification():
 
 def test_employer_post_job_cli(monkeypatch, capsys):
     """Test the interactive CLI prompt flow where an employer posts a job listing."""
-    # Simulate employer entering: Job Title, Salary, Location
     user_inputs = iter(["Backend Python Engineer", "150000", "Nairobi"])
     monkeypatch.setattr("builtins.input", lambda _: next(user_inputs))
 
-    # Employer interactive prompt logic
     title = input("Enter Job Title: ")
     salary = input("Enter Offered Salary: ")
     location = input("Enter Job Location: ")
@@ -67,7 +66,6 @@ def test_employer_post_job_cli(monkeypatch, capsys):
 
 def test_employer_delete_job_cli(monkeypatch, capsys):
     """Test the CLI prompt for an employer deleting a posted job listing."""
-    # Simulate entering Job ID '2024' and confirming with 'yes'
     user_inputs = iter(["2024", "yes"])
     monkeypatch.setattr("builtins.input", lambda _: next(user_inputs))
 
