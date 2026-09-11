@@ -9,6 +9,7 @@
 
 from pathlib import Path
 # used for handling and manipulating file and folder paths
+import json
 
 class DataManager:
     #Initializing the class with the directory path to the data
@@ -20,7 +21,7 @@ class DataManager:
         #Setting the path to the JSON file(s)
         self.users_file = self.data_directory / "Data/users.json"
         self.jobs_file = self.data_directory / "Data/jobs.json"
-        
+
         #Calling the method
         self._ensure_file(self.users_file)
         self._ensure_file(self.jobs_file)
@@ -32,3 +33,18 @@ class DataManager:
         if not path.exists():
             #Encodes the text so that the computer may understand
             path.write_text("[]", encoding = "utf-8")
+
+    @staticmethod
+    def _read_records(path):
+        
+        try:
+            content = path.read_text(encoding = "utf-8")
+
+            if not content.strip():
+                return []
+            
+            records = json.loads(content)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+        
+        return records if isinstance(records, list) else []
