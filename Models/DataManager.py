@@ -36,7 +36,7 @@ class DataManager:
 
     @staticmethod
     def _read_records(path):
-        
+
         try:
             content = path.read_text(encoding = "utf-8")
 
@@ -44,7 +44,13 @@ class DataManager:
                 return []
             
             records = json.loads(content)
+
         except (FileNotFoundError, json.JSONDecodeError):
             return []
         
         return records if isinstance(records, list) else []
+
+    @staticmethod
+    def _write_records(path, records):
+
+        path.write_text(json.dumps(records, indent=2)), encoding = "utf-8"
