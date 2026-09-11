@@ -10,6 +10,8 @@
 from pathlib import Path
 # used for handling and manipulating file and folder paths
 import json
+from Models.JobListing import JobListing
+from Models.User import User
 
 class DataManager:
     #Initializing the class with the directory path to the data
@@ -53,4 +55,18 @@ class DataManager:
     @staticmethod
     def _write_records(path, records):
 
-        path.write_text(json.dumps(records, indent=2)), encoding = "utf-8"
+        path.write_text(json.dumps(records, indent=4), encoding = "utf-8")
+
+    def save_user(self, user):
+        records = self._read_records(self.users_file)
+        payload = user.to_dict() if hasattr(user, "to_dict") else user
+        for index, record in enumerate(records):
+            if record.get("user_id") == payload.get("user_id"):
+                records[index] = payload
+                break
+        else:
+            records.append(payload)
+        self._write_records(self.users_file, records)
+
+
+    
