@@ -68,5 +68,15 @@ class DataManager:
             records.append(payload)
         self._write_records(self.users_file, records)
 
+    def save_job(self, job):
+       records = self._read_records(self.jobs_file)
+       payload = job.to_dict() if hasattr(job, "to_dict") else job
+       for index, record in enumerate(records):
+           if record.get("job_id") == payload.get("job_id"):
+               records[index] = payload
+               break
+       else:
+           records.append(payload)
+       self._write_records(self.jobs_file, records)
 
     
