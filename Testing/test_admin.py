@@ -1,7 +1,11 @@
 #Test file for the admin
 import json
 import pytest
+<<<<<<< Updated upstream
 from admin import AdminManager, BaseManager
+=======
+from Models.Admin import AdminManager, BaseManager
+>>>>>>> Stashed changes
 
 @pytest.fixture
 def admin_manager(tmp_path, monkeypatch):
