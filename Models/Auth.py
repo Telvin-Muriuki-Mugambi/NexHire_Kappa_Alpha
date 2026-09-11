@@ -35,3 +35,22 @@ class Auth:
             raise ValueError("Role does not exist")
 
         return user
+    #Method of login of a user. Uses the email and password
+
+    def login(self, email, password):
+
+        #Retrives the email from the user's dictionary
+        user = self.users.get(email)
+
+        #Check if the email is there and if the password's match
+        if user is None or not user.verify_password(password):
+            raise ValueError("Invalid email or password")
+        #if it passes the current session is set for the current user
+        self.current_user = user
+        return user
+
+    #Method to logout the user
+    def logout(self):
+        #Removes the user by setting the current user to None
+        self.current_user = None
+
