@@ -1,0 +1,1 @@
+print("This page is used to create a simple landing view on the CLI")
