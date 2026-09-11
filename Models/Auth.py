@@ -7,6 +7,16 @@
 
 from Models.User import User
 
+#Improving feedback to user by creating new classes that handle errors
+
+class DuplicateEmailError(ValueError):
+    pass
+
+class AuthenitcationError(ValueError):
+    pass
+
+class AuthorizationError(PermissionError):
+    pass
 
 class Auth:
     ROLES = {"ADMIN", "JOB_SEEKER", "EMPLOYER"}
@@ -27,12 +37,12 @@ class Auth:
 
         #Check if the email already exists
         if email  in self.users:
-            raise ValueError("The email already exists")
+            raise DuplicateEmailError("The email already exists")
         
         role = role.upper()
         #Handle edge case if the role entered exist or not
         if role not in self.ROLES:
-            raise ValueError("Role does not exist")
+            raise ValueError("Unkown role")
 
         return user
     #Method of login of a user. Uses the email and password
@@ -44,7 +54,7 @@ class Auth:
 
         #Check if the email is there and if the password's match
         if user is None or not user.verify_password(password):
-            raise ValueError("Invalid email or password")
+            raise AuthenitcationError("Invalid email or password")
         #if it passes the current session is set for the current user
         self.current_user = user
         return user
