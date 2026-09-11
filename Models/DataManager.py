@@ -79,4 +79,12 @@ class DataManager:
            records.append(payload)
        self._write_records(self.jobs_file, records)
 
+    def load_users(self):
+        return [User.from_dict(record) for record in self._read_records(self.users_file)]
+
+
+    def load_jobs(self):
+       return [JobListing.from_dict(record) for record in self._read_records(self.jobs_file)]
+
+
     
