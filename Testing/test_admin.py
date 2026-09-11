@@ -39,6 +39,7 @@ def test_admin_manager_overrides_parent_description():
 def test_admin_class_properties():
     assert hasattr(AdminManager, "USERS_FILE") and hasattr(AdminManager, "JOBS_FILE")
 
+
 def test_get_default_paths_is_class_method():
     paths = AdminManager.get_default_paths()
     assert isinstance(paths, dict) and "users_path" in paths and "jobs_path" in paths
@@ -85,3 +86,4 @@ def test_already_approved_job_cannot_be_approved_again(admin_manager, admin_user
     monkeypatch.setattr("builtins.input", lambda _: "y")
     assert admin_manager.approve_job(job["job_id"], admin_user) is True
     assert admin_manager.approve_job(job["job_id"], admin_user) is False
+
