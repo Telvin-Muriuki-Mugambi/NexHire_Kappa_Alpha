@@ -64,3 +64,7 @@ class Auth:
         #Removes the user by setting the current user to None
         self.current_user = None
 
+    #Checks if the user has a role
+    def has_role(self, role):
+        return self.current_user is not None and self.current_user.role == role.upper()
+
