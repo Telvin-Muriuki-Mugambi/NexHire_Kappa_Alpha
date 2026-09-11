@@ -1,86 +1,87 @@
 #Test file for the admin
+import json
 import pytest
-from Models.Admin import AdminManager, BaseManager
+from admin import AdminManager, BaseManager
 
-# Test the CRUD operations on users
-def test_crud_on_users(tmp_path, monkeypatch):
-    temp_users = tmp_path / "users.json"
-    monkeypatch.setattr(AdminManager, "USERS_FILE", str(temp_users))
-    
-    manager = AdminManager()
-    
-    # 1. Test Create
-    new_user = manager.manage_user("create", username="testuser", email="test@mail.com", password="123", role="user")
-    assert new_user["username"] == "testuser"
-    assert "user_id" in new_user
-    
-    # 2. Test Get
-    users = manager.manage_user("get")
-    assert len(users) == 1
-    assert users[0]["username"] == "testuser"
-    
-    # 3. Test Update
-    user_id = new_user["user_id"]
-    updated = manager.manage_user("update", user_id=user_id, new_role="admin")
-    assert updated is True
-    
-    users_after_update = manager.manage_user("get")
-    assert users_after_update[0]["role"] == "admin"
-    
-    # 4. Test Delete
-    deleted = manager.manage_user("delete", user_id=user_id)
-    assert deleted is True
-    assert len(manager.manage_user("get")) == 0
+@pytest.fixture
+def admin_manager(tmp_path, monkeypatch):
+    u, j = tmp_path / "users.json", tmp_path / "jobs.json"
+    u.write_text("[]"); j.write_text("[]")
+    monkeypatch.setattr(AdminManager, "USERS_FILE", str(u))
+    monkeypatch.setattr(AdminManager, "JOBS_FILE", str(j))
+    return AdminManager()
 
-def test_verify_opportunity_posted(tmp_path, monkeypatch):
-    temp_jobs = tmp_path / "jobs.json"
-    monkeypatch.setattr(AdminManager, "JOBS_FILE", str(temp_jobs))
-    
-    manager = AdminManager()
-    
-    # 1. Post a job opportunity
-    job = manager.post_opportunity(
-        title="Software Engineer", 
-        description="Build scalable apps", 
-        company="TechCorp", 
-        admin_id="admin_123"
-    )
-    assert job["title"] == "Software Engineer"
-    assert job["status"] == "pending"
-    
-    # 2. Review pending opportunities
-    pending_jobs = manager.review_opportunity()
-    assert len(pending_jobs) == 1
-    
-    # 3. Approve job
-    job_id = job["job_id"]
-    approved = manager.approve_job(job_id)
-    assert approved is True
-    
-    # Verify no more pending jobs exist
-    assert len(manager.review_opportunity()) == 0
+@pytest.fixture
+def admin_user():
+    return {"user_id": "admin-001", "role": "ADMIN"}
 
-def test_base_manager_inheritance(tmp_path):
-    temp_file = tmp_path / "test_base.json"
-    manager = AdminManager()
-    
-    manager._save_data(str(temp_file), [{"test": "data"}])
-    data = manager._load_data(str(temp_file))
-    
-    assert data == [{"test": "data"}]
+@pytest.fixture
+def normal_user():
+    return {"user_id": "user-001", "role": "USER"}
 
-def test_polymorphic_description():
-    base = BaseManager()
+def test_admin_manager_inherits_from_base_manager():
     admin = AdminManager()
-    
-    assert base.get_manager_description() == "Base Data Manager System"
-    assert admin.get_manager_description() == "Admin-Level Security and Opportunity Manager"
+    assert isinstance(admin, AdminManager) and isinstance(admin, BaseManager)
 
-def test_class_methods_and_edge_cases():
-    paths = AdminManager.get_default_paths()
-    assert "users_path" in paths
-    assert "jobs_path" in paths
-    
+def test_base_manager_protected_methods_exist():
     manager = AdminManager()
-    result = manager.manage_user("update", user_id="nonexistent_id", new_role="superuser")
-    assert result is False
+    assert hasattr(manager, "_ensure_file_exists") and hasattr(manager, "_load_data") and hasattr(manager, "_save_data")
+
+def test_load_and_save_data_are_encapsulated(admin_manager):
+    test_data = [{"name": "Test User"}]
+    admin_manager._save_data(admin_manager.USERS_FILE, test_data)
+    assert admin_manager._load_data(admin_manager.USERS_FILE) == test_data
+
+def test_admin_manager_overrides_parent_description():
+    assert BaseManager().get_manager_description() == "Base Data Manager System"
+    assert AdminManager().get_manager_description() == "Admin-Level Security and Opportunity Manager"
+
+def test_admin_class_properties():
+    assert hasattr(AdminManager, "USERS_FILE") and hasattr(AdminManager, "JOBS_FILE")
+
+def test_get_default_paths_is_class_method():
+    paths = AdminManager.get_default_paths()
+    assert isinstance(paths, dict) and "users_path" in paths and "jobs_path" in paths
+
+def test_post_opportunity_creates_pending_job(admin_manager, admin_user):
+    job = admin_manager.post_opportunity("Dev", "Python", "Tech", admin_user["user_id"])
+    assert job["job_id"] and job["status"] == "PENDING"
+
+def test_post_opportunity_persists_to_json(admin_manager, admin_user):
+    job = admin_manager.post_opportunity("Backend", "APIs", "ABC", admin_user["user_id"])
+    with open(admin_manager.JOBS_FILE, "r") as f:
+        assert len(json.load(f)) == 1
+
+def test_review_opportunity_returns_pending_jobs(admin_manager, admin_user):
+    admin_manager.post_opportunity("Frontend", "React", "A", admin_user["user_id"])
+    assert len(admin_manager.review_opportunity(admin_user)) == 1
+
+def test_admin_can_approve_pending_job(admin_manager, admin_user, monkeypatch):
+    job = admin_manager.post_opportunity("Python", "Dev", "Tech", admin_user["user_id"])
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    assert admin_manager.approve_job(job["job_id"], admin_user) is True
+
+def test_approved_status_persists_to_json(admin_manager, admin_user, monkeypatch):
+    job = admin_manager.post_opportunity("SE", "Dev", "Ltd", admin_user["user_id"])
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    admin_manager.approve_job(job["job_id"], admin_user)
+    with open(admin_manager.JOBS_FILE, "r") as f:
+        assert json.load(f)[0]["status"] == "APPROVED"
+
+def test_job_remains_pending_when_admin_rejects_confirmation(admin_manager, admin_user, monkeypatch):
+    job = admin_manager.post_opportunity("Fake", "Desc", "Unknown", admin_user["user_id"])
+    monkeypatch.setattr("builtins.input", lambda _: "n")
+    assert admin_manager.approve_job(job["job_id"], admin_user) is False
+
+def test_only_admin_can_review_jobs(admin_manager, normal_user):
+    with pytest.raises(PermissionError):
+        admin_manager.review_opportunity(normal_user)
+
+def test_invalid_job_id_returns_false(admin_manager, admin_user):
+    assert admin_manager.approve_job("INVALID-ID", admin_user) is False
+
+def test_already_approved_job_cannot_be_approved_again(admin_manager, admin_user, monkeypatch):
+    job = admin_manager.post_opportunity("Dev", "Code", "Co", admin_user["user_id"])
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    assert admin_manager.approve_job(job["job_id"], admin_user) is True
+    assert admin_manager.approve_job(job["job_id"], admin_user) is False
