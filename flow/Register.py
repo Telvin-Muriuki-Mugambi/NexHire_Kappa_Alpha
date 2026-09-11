@@ -24,30 +24,39 @@ def register():
 
     #Collection of user details
     name = input("Please enter your full name: ")
+
     email = verify_email()
+    #Loop that ensures a verified email is returned in case the user inserts an incorrect email
     while email is None:
         email = verify_email()
 
     phone = input("Please enter your phone number: ")
+
     password = validate_password()
+    #Loop to run till a password is returned incase the user inserts an incorrect password
     while password is None:
         password = validate_password()
 
     #Calling the auth class to supply the register method
     user = auth.register(name, email, phone, password, role=role)
+
     #Information display to user to show what is happening behind the scenes
     print(f"Registered {user.email} as {user.role}")
+
     #Login user after registration and catching any errors
     try:
         logged_in_user = auth.login(email, password)
         print(f"Logged in as {logged_in_user.name}")
         auth.require_role(role)
         print(f"{role.replace('_', ' ').title()} access granted")
+
     except (AuthenticationError, AuthorizationError) as error:
         print(error)
+
     finally:
         auth.logout()
 
 #Rather than running the function directly, it will be run on the main file
 if __name__ == "__main__":
     register()
+    

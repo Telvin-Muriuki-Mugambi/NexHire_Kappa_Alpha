@@ -3,14 +3,19 @@ import getpass
 #Provide access to Auth class
 
 def login():
-    #We simply take the email and password
-    email = input ("Please enter your email address: ")
-    password = getpass.getpass("Enter your password: ")
+    try: 
+        #We simply take the email and password
+        email = input ("Please enter your email address: ")
+        password = getpass.getpass("Enter your password: ")
 
-    auth = Auth()
+        auth = Auth()
 
-    logged_in_user = auth.login(email, password)
-    print(f"Logged in as {logged_in_user.name}")
+        logged_in_user = auth.login(email, password)
+        print(f"Logged in as {logged_in_user.name}")
+
+    except (AuthenticationError, AuthenticationError):
+        print(error)
 
 if __name__ == "__main__":
     login()
+    

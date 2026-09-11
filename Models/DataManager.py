@@ -86,5 +86,7 @@ class DataManager:
     def load_jobs(self):
        return [JobListing.from_dict(record) for record in self._read_records(self.jobs_file)]
 
+    def get_job_by_id(self, job_id):
+       return next((job for job in self.load_jobs() if job.job_id == job_id), None)
 
     
