@@ -13,9 +13,9 @@ def login():
         logged_in_user = auth.login(email, password)
         print(f"Logged in as {logged_in_user.name}")
 
-    except (AuthenticationError, AuthenticationError):
+    except (AuthenticationError, AuthenticationError) as error:
         print(error)
 
 if __name__ == "__main__":
     login()
-    
+
