@@ -1,6 +1,7 @@
 from email_validator import validate_email, EmailNotValidError
 #A package that provides the tools to validate an email
-def Verify_Email(email_str):
+def verify_email():
+    email_str = input("Please enter your email address: ")
     try:
         # Validates syntax and checks if the domain exists
         email_info = validate_email(email_str, check_deliverability=True)
