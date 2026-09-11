@@ -15,6 +15,15 @@ class DataManager:
 
     def __init__(self, data_directory):
         self.data_directory = Path(data_directory)
+        self.data_directory.mkdir(parents=True, exist_ok=True)
+
+        #Setting the path to the JSON file(s)
+        self.users_file = self.data_directory / "Data/users.json"
+        self.jobs_file = self.data_directory / "Data/jobs.json"
+        
+        #Calling the method
+        self._ensure_file(self.users_file)
+        self._ensure_file(self.jobs_file)
 
     #Ensuring the file exists
     #It's function is closely related to the class hence use os static method
