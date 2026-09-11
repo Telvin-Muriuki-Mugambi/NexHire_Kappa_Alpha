@@ -1,5 +1,9 @@
+from pathlib import Path
+
 from Models.Auth import Auth, AuthenticationError, AuthorizationError
+from Models.DataManager import DataManager
 from helpers import validate_password, verify_email
+
 
 def register():
     #We need to know the user role as soon as possible
@@ -11,7 +15,9 @@ def register():
     ).strip().upper()
 
     #First Order function saving Auth to a variable
-    auth = Auth()
+    data_dir = Path(__file__).resolve().parents[1] / "Data"
+    data_manager = DataManager(data_dir)
+    auth = Auth(data_manager)
 
     #Improvement from previous logic
     #Conditional statement to set the role of the user

@@ -5,7 +5,6 @@ from pathlib import Path
 from Models.JobListing import JobListing
 from Models.User import User
 
-
  
 class DataManager:
    """Persist users and job listings as JSON collections."""
