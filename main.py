@@ -1,7 +1,7 @@
-from flow.Register import register
+from flow.Login import login
 
 def main():
-    register()
+    login()
 
 if __name__ == "__main__":
 	main()
