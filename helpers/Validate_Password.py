@@ -34,7 +34,3 @@ def validate_password():
         print("Passwords do not match")
         return None
 
-
-
-# Run the validator
-validate_password()

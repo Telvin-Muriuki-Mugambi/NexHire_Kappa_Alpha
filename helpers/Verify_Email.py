@@ -7,9 +7,10 @@ def verify_email():
         email_info = validate_email(email_str, check_deliverability=True)
         
         # Returns the normalized, clean version of the email
-        return f"Valid! Normalized email: {email_info.normalized}"
+        return email_info.normalized
     except EmailNotValidError as e:
         # Provides a friendly error message explaining why it failed
-        return f"Invalid: {str(e)}"
+        print(f"❌ Invalid email: {str(e)}")
+        return None
 
 
