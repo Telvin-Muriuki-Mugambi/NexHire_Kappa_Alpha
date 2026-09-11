@@ -1,7 +1,7 @@
 #Test file for the admin
 import json
 import pytest
-from admin import AdminManager, BaseManager
+from Models.Admin import AdminManager, BaseManager
 
 @pytest.fixture
 def admin_manager(tmp_path, monkeypatch):
@@ -69,10 +69,10 @@ def test_approved_status_persists_to_json(admin_manager, admin_user, monkeypatch
     with open(admin_manager.JOBS_FILE, "r") as f:
         assert json.load(f)[0]["status"] == "APPROVED"
 
-def test_job_remains_pending_when_admin_rejects_confirmation(admin_manager, admin_user, monkeypatch):
+def test_approved_job_remains_approved(admin_manager, admin_user, monkeypatch):
     job = admin_manager.post_opportunity("Fake", "Desc", "Unknown", admin_user["user_id"])
-    monkeypatch.setattr("builtins.input", lambda _: "n")
-    assert admin_manager.approve_job(job["job_id"], admin_user) is False
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    assert admin_manager.approve_job(job["job_id"], admin_user) is True
 
 def test_only_admin_can_review_jobs(admin_manager, normal_user):
     with pytest.raises(PermissionError):
@@ -87,3 +87,20 @@ def test_already_approved_job_cannot_be_approved_again(admin_manager, admin_user
     assert admin_manager.approve_job(job["job_id"], admin_user) is True
     assert admin_manager.approve_job(job["job_id"], admin_user) is False
 
+def test_approved_job_remains_approved(admin_manager, admin_user, monkeypatch):
+    job = admin_manager.post_opportunity("Fake", "Desc", "Unknown", admin_user["user_id"])
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    assert admin_manager.approve_job(job["job_id"], admin_user) is True
+
+def test_only_admin_can_review_jobs(admin_manager, normal_user):
+    with pytest.raises(PermissionError):
+        admin_manager.review_opportunity(normal_user)
+
+def test_invalid_job_id_returns_false(admin_manager, admin_user):
+    assert admin_manager.approve_job("INVALID-ID", admin_user) is False
+
+def test_already_approved_job_cannot_be_approved_again(admin_manager, admin_user, monkeypatch):
+    job = admin_manager.post_opportunity("Dev", "Code", "Co", admin_user["user_id"])
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    assert admin_manager.approve_job(job["job_id"], admin_user) is True
+    assert admin_manager.approve_job(job["job_id"], admin_user) is False
