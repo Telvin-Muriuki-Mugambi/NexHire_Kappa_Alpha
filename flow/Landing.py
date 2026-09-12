@@ -18,6 +18,10 @@ def landing():
 
     # Fore.CYAN makes the text cyan, Style.BRIGHT makes it vivid
     print(Fore.CYAN + Style.BRIGHT + nexhire_logo)
+    print(
+        "Welcome to NexHire \n\n"
+        "Connecting young talent to opportunity\n"
+    )
 
 if __name__ == "__main__":
     landing()
