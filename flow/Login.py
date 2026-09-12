@@ -16,7 +16,6 @@ def login(auth=None):
         password = getpass.getpass("Enter your password: ")
 
         logged_in_user = auth.login(email, password)
-        print(f"Logged in as {logged_in_user.name} ({logged_in_user.role.replace('_', ' ').title()})")
         return logged_in_user
 
     except AuthenticationError as error:

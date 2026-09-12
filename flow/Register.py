@@ -28,7 +28,7 @@ def register(auth=None):
     elif user_role == "E":
         role = "EMPLOYER"
     else:
-        print("Please enter JB for Job Seeker or E for Employer.")
+        print("Please enter JB for Job Seeker or E for Employer.\n")
         return None
 
     #Collection of user details
@@ -50,22 +50,22 @@ def register(auth=None):
     try:
         user = auth.register(name, email, phone, password, role=role)
     except DuplicateEmailError as error:
-        print(f"Registration failed: {error}. Please use a different email address.")
+        print(f"Registration failed: {error}. Please use a different email address.\n")
         return None
 
     #Information display to user to show what is happening behind the scenes
-    print(f"Registered {user.email} as {user.role}")
+    print(f"Registered {user.email} as {user.role}\n")
 
     #Login user after registration and catching any errors
     try:
         logged_in_user = auth.login(email, password)
-        print(f"Logged in as {logged_in_user.name}")
+        print(f"Logged in as {logged_in_user.name}\n")
         auth.require_role(role)
-        print(f"{role.replace('_', ' ').title()} access granted")
+        print(f"{role.replace('_', ' ').title()} access granted\n")
         return logged_in_user
 
     except (AuthenticationError, AuthorizationError) as error:
-        print(f"Registration succeeded, but automatic login failed: {error}")
+        print(f"Registration succeeded, but automatic login failed: {error}\n")
         return user
 
 #Rather than running the function directly, it will be run on the main file

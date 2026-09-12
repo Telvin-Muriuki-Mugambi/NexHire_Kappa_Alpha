@@ -37,7 +37,7 @@ def landing(auth=None):
     while True:
         if auth.current_user is not None:
             current = auth.current_user
-            print(f"Signed in as {current.name} ({current.role.replace('_', ' ').title()})")
+            print(f"Signed in as {current.name} ({current.role.replace('_', ' ').title()})\n")
             print("[L] Logout  [Q] Quit")
         else:
             print("[R] Register  [L] Login  [Q] Quit")
@@ -47,14 +47,14 @@ def landing(auth=None):
             register(auth)
         elif choice == "L" and auth.current_user is not None:
             auth.logout()
-            print("You have been logged out.")
+            print("You have been logged out.\n")
         elif choice == "L":
             login(auth)
         elif choice == "Q":
             print("Goodbye.")
             return
         else:
-            print("Please choose one of the options shown above.")
+            print("\nPlease choose one of the options shown above.")
 
 if __name__ == "__main__":
     landing()

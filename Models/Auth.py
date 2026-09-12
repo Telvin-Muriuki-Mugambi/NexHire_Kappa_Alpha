@@ -33,7 +33,7 @@ class Auth:
         self.current_user = None
 
     #Method for registering the user
-    def register(self, name, email, phone, password, role="JOB_SEEKER"):
+    def register(self, name, email, phone, password, role):
 
         #Check if the email already exists
         if email in self.users:

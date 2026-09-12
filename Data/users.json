@@ -14,5 +14,21 @@
     "phone_number": "25452455422",
     "role": "EMPLOYER",
     "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+  },
+  {
+    "user_id": 9219,
+    "name": "John Doe",
+    "email": "john@gmail.com",
+    "phone_number": "254123456",
+    "role": "EMPLOYER",
+    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+  },
+  {
+    "user_id": 6561,
+    "name": "admin101",
+    "email": "admin101@gmail.com",
+    "phone_number": "254000000",
+    "role": "ADMIN",
+    "password_hash": "13d28164b8ff012a45df7d5f1bc19caf593e979a702ec66cc8977819b5623501"
   }
 ]
