@@ -30,5 +30,13 @@
     "phone_number": "254000000",
     "role": "ADMIN",
     "password_hash": "13d28164b8ff012a45df7d5f1bc19caf593e979a702ec66cc8977819b5623501"
+  },
+  {
+    "user_id": 7988,
+    "name": "Jane Doe",
+    "email": "qwerty@gmail.com",
+    "phone_number": "23456789876543",
+    "role": "EMPLOYER",
+    "password_hash": "6faf759346a3fda7b2c49101d0d1f9723465f7f073bf3997ebae3b524ecc872f"
   }
 ]
