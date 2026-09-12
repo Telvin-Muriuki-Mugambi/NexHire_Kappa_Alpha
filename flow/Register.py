@@ -1,11 +1,16 @@
 from pathlib import Path
 
-from Models.Auth import Auth, AuthenticationError, AuthorizationError
+from Models.Auth import Auth, AuthenticationError, AuthorizationError, DuplicateEmailError
 from Models.DataManager import DataManager
 from helpers import validate_password, verify_email
 
 
-def register():
+def _default_auth():
+    data_dir = Path(__file__).resolve().parents[1] / "Data"
+    return Auth(DataManager(data_dir))
+
+
+def register(auth=None):
     #We need to know the user role as soon as possible
     #Check if user wants to register as a job seeker or as an employer
     user_role = input(
@@ -14,10 +19,7 @@ def register():
         " Employer type (E)\n: "
     ).strip().upper()
 
-    #First Order function saving Auth to a variable
-    data_dir = Path(__file__).resolve().parents[1] / "Data"
-    data_manager = DataManager(data_dir)
-    auth = Auth(data_manager)
+    auth = auth or _default_auth()
 
     #Improvement from previous logic
     #Conditional statement to set the role of the user
@@ -26,7 +28,8 @@ def register():
     elif user_role == "E":
         role = "EMPLOYER"
     else:
-        raise ValueError("Please enter a valid input. Either JB/jb or E/e")
+        print("Please enter JB for Job Seeker or E for Employer.")
+        return None
 
     #Collection of user details
     name = input("Please enter your full name: ")
@@ -44,7 +47,11 @@ def register():
         password = validate_password()
 
     #Calling the auth class to supply the register method
-    user = auth.register(name, email, phone, password, role=role)
+    try:
+        user = auth.register(name, email, phone, password, role=role)
+    except DuplicateEmailError as error:
+        print(f"Registration failed: {error}. Please use a different email address.")
+        return None
 
     #Information display to user to show what is happening behind the scenes
     print(f"Registered {user.email} as {user.role}")
@@ -55,12 +62,11 @@ def register():
         print(f"Logged in as {logged_in_user.name}")
         auth.require_role(role)
         print(f"{role.replace('_', ' ').title()} access granted")
+        return logged_in_user
 
     except (AuthenticationError, AuthorizationError) as error:
-        print(error)
-
-    finally:
-        auth.logout()
+        print(f"Registration succeeded, but automatic login failed: {error}")
+        return user
 
 #Rather than running the function directly, it will be run on the main file
 if __name__ == "__main__":

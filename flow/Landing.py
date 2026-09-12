@@ -1,7 +1,15 @@
 import colorama
 from colorama import Fore, Style
 
-def landing():
+def landing(auth=None):
+    if auth is None:
+        from Models.Auth import Auth
+        from Models.DataManager import DataManager
+        from pathlib import Path
+
+        data_dir = Path(__file__).resolve().parents[1] / "Data"
+        auth = Auth(DataManager(data_dir))
+
     # Initialize colorama (required for Windows support)
     colorama.init(autoreset=True)
 
@@ -20,8 +28,33 @@ def landing():
     print(Fore.CYAN + Style.BRIGHT + nexhire_logo)
     print(
         "Welcome to NexHire \n\n"
-        "Connecting young talent to opportunity\n"
+        "Connecting young talent to opportunity\n\n"
     )
+
+    from .Login import login
+    from .Register import register
+
+    while True:
+        if auth.current_user is not None:
+            current = auth.current_user
+            print(f"Signed in as {current.name} ({current.role.replace('_', ' ').title()})")
+            print("[L] Logout  [Q] Quit")
+        else:
+            print("[R] Register  [L] Login  [Q] Quit")
+
+        choice = input("Choose an option: ").strip().upper()
+        if choice == "R" and auth.current_user is None:
+            register(auth)
+        elif choice == "L" and auth.current_user is not None:
+            auth.logout()
+            print("You have been logged out.")
+        elif choice == "L":
+            login(auth)
+        elif choice == "Q":
+            print("Goodbye.")
+            return
+        else:
+            print("Please choose one of the options shown above.")
 
 if __name__ == "__main__":
     landing()
