@@ -1,7 +1,8 @@
-from flow.Login import login
+from flow.CLI import run_cli
 
-def main():
-    login()
+
+def main(argv=None):
+    return run_cli(argv)
 
 if __name__ == "__main__":
-	main()
+    raise SystemExit(main())
