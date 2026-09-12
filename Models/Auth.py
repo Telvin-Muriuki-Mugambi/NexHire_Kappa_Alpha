@@ -24,8 +24,12 @@ class AuthorizationError(PermissionError):
 class Auth:
     ROLES = {"ADMIN", "JOB_SEEKER", "EMPLOYER"}
 
-    def __init__(self):
-        self.users = {}
+    def __init__(self, data_manager=None):
+        self.data_manager = data_manager
+        self.users = {
+            user.email: user
+            for user in data_manager.load_users()
+        } if data_manager is not None else {}
         self.current_user = None
 
     #Method for registering the user
@@ -44,6 +48,8 @@ class Auth:
         user = User(name, email, phone, password)
         user.role = role
         self.users[email] = user
+        if self.data_manager is not None:
+            self.data_manager.save_user(user)
         return user
     
     #Method of login of a user. Uses the email and password

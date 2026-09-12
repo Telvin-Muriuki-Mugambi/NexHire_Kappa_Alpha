@@ -1,7 +1,25 @@
 [
+
     {
         "user_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
         "username": "AdminTest",
         "role": "admin"
-    }
+    },
+  {
+    "user_id": 7625,
+    "name": "Muriuki Telvin Mugambi",
+    "email": "wewe@gmail.com",
+    "phone_number": "254113729771",
+    "role": "JOB_SEEKER",
+    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+  },
+  {
+    "user_id": 1642,
+    "name": "Muriuki Telvin Davis Mugambi",
+    "email": "mimi@gmail.com",
+    "phone_number": "25452455422",
+    "role": "EMPLOYER",
+    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+  }
+
 ]
