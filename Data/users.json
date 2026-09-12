@@ -1,4 +1,10 @@
 [
+
+    {
+        "user_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
+        "username": "AdminTest",
+        "role": "admin"
+    },
   {
     "user_id": 7625,
     "name": "Muriuki Telvin Mugambi",
@@ -15,4 +21,5 @@
     "role": "EMPLOYER",
     "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
   }
+
 ]
