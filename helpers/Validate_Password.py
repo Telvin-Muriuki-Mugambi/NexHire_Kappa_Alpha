@@ -20,7 +20,7 @@ def validate_password():
     if password == confirm_password:
 
         if re.match(password_pattern, password):
-            print("✅ Password is valid and secure!")
+            print("✅ Password is valid and secure!\n")
             return password
         
         else:
@@ -28,9 +28,9 @@ def validate_password():
             print("- Must be at least 8 characters long")
             print("- Must contain at least one uppercase letter")
             print("- Must contain at least one lowercase letter")
-            print("- Must contain at least one special character")
+            print("- Must contain at least one special character\n")
             return None
     else:
-        print("Passwords do not match")
+        print("Passwords do not match\n")
         return None
 

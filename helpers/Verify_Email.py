@@ -10,7 +10,7 @@ def verify_email():
         return email_info.normalized
     except EmailNotValidError as e:
         # Provides a friendly error message explaining why it failed
-        print(f"❌ Invalid email: {str(e)}")
+        print(f"❌ Invalid email: {str(e)}\n")
         return None
 
 
