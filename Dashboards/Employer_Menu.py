@@ -25,6 +25,38 @@ def show_employer_menu(auth=None):
         user_id=current_employer.user_id,
     )
 
+    def view_applicants():
+        employer.load_jobs()
+        if not employer.my_jobs:
+            print("You have not posted any jobs yet.")
+            return
+
+        print("\n--- Select a job ---")
+        for index, job in enumerate(employer.my_jobs, start=1):
+            print(f"{index}. {job.display_info()}")
+        print("Q. Return to employer menu")
+
+        selection = input("Choose a job: ").strip().upper()
+        if selection == "Q":
+            return
+        if not selection.isdigit() or not 1 <= int(selection) <= len(employer.my_jobs):
+            print("Please choose one of the listed jobs.")
+            return
+
+        selected_job = employer.my_jobs[int(selection) - 1]
+        while True:
+            applicants = auth.data_manager.load_applicants(selected_job.job_id)
+            print(f"\n--- Applicants for {selected_job.title} ---")
+            if not applicants:
+                print("No applicants have applied for this job.")
+            else:
+                for index, applicant in enumerate(applicants, start=1):
+                    print(f"{index}. Name: {applicant.get('name', 'Unknown')}")
+                    print(f"   CV: {applicant.get('cv') or 'CV not available'}")
+            print("\nE. Exit to employer menu")
+            if input("Choose an option: ").strip().upper() == "E":
+                return
+
     while True:
         print("\n=== NexHire Employer Dashboard ===")
         print(f"Employer: {employer.company_name}")
@@ -47,6 +79,7 @@ def show_employer_menu(auth=None):
                 print("You have not posted any jobs yet.")
             for job in employer.my_jobs:
                 print(job.display_info())
+
         elif choice == "2":
             title = input("Job title: ").strip()
             description = input("Job description: ").strip()
@@ -70,8 +103,13 @@ def show_employer_menu(auth=None):
                 print(f"Job posted successfully. ID: {job.job_id}")
             except (ValueError, TypeError) as error:
                 print(f"Unable to post job: {error}")
+
+        elif choice == "3":
+            view_applicants()
+        
         elif choice == "4":
             print(f"Profile: {current_employer.name} | {current_employer.email} | {current_employer.phone_number}")
+
         elif choice == "5":
             job_id = input("Job ID to delete: ").strip()
             if employer.delete_job(job_id):

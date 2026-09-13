@@ -15,8 +15,10 @@ class DataManager:
        self.data_dir.mkdir(parents=True, exist_ok=True)
        self.users_file = self.data_dir / "users.json"
        self.jobs_file = self.data_dir / "jobs.json"
+       self.applications_file = self.data_dir / "applications.json"
        self._ensure_file(self.users_file)
        self._ensure_file(self.jobs_file)
+       self._ensure_file(self.applications_file)
 
 
    @staticmethod
@@ -147,3 +149,30 @@ class DataManager:
            if self._normalize_id(record.get("job_id")) == target_id:
                return JobListing.from_dict(record)
        return None
+
+
+   def save_application(self, job_id, user_id, name, cv=None):
+       records = self._read_records(self.applications_file)
+       application = {
+           "job_id": job_id,
+           "user_id": user_id,
+           "name": name,
+           "cv": cv,
+       }
+       already_applied = any(
+           self._normalize_id(record.get("job_id")) == self._normalize_id(job_id)
+           and self._normalize_id(record.get("user_id")) == self._normalize_id(user_id)
+           for record in records
+       )
+       if not already_applied:
+           records.append(application)
+           self._write_records(self.applications_file, records)
+       return application
+
+
+   def load_applicants(self, job_id):
+       target_id = self._normalize_id(job_id)
+       return [
+           record for record in self._read_records(self.applications_file)
+           if self._normalize_id(record.get("job_id")) == target_id
+       ]

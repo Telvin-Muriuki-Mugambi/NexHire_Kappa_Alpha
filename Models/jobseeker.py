@@ -10,12 +10,12 @@ class JobSeeker:
 
     cv_file_path = "Models/jobseekers_cv's"
 
-    def __init__(self, data_manager=None, user_id=None, name=None):
+    def __init__(self, data_manager=None, user_id=None, name=None, cv=None):
         self.data_manager = data_manager
         self.user_id = user_id
         self.name = name
+        self.cv_path = cv
         self.applied_jobs = []
-        self.cv_path = None
         self.job_postings = self._load_jobs()
 
     def _load_jobs(self):
@@ -76,6 +76,13 @@ class JobSeeker:
             return job_id
         if job is None:
             raise ValueError("You can only apply for an approved job with that ID.")
+        if self.data_manager is not None:
+            self.data_manager.save_application(
+                job_id=job.job_id,
+                user_id=self.user_id,
+                name=self.name,
+                cv=self.cv_path,
+            )
         if str(job.job_id) not in {str(applied_id) for applied_id in self.applied_jobs}:
             self.applied_jobs.append(job.job_id)
         return job.job_id

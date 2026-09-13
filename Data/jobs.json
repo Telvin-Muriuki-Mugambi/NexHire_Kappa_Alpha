@@ -17,5 +17,21 @@
     "status": "APPROVED",
     "employer_id": 1887,
     "company_name": "Muriuki Derrick Munene"
+  },
+  {
+    "job_id": 4735,
+    "title": "Mobile App Developer",
+    "description": "Lorem Ipsum",
+    "location": "Kenya",
+    "skills": [
+      "react native",
+      "sql"
+    ],
+    "pay_rate": 200000.0,
+    "experience_level": "entry",
+    "availability": "full time",
+    "status": "APPROVED",
+    "employer_id": 1887,
+    "company_name": "Muriuki Derrick Munene"
   }
 ]

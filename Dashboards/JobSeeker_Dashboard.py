@@ -8,7 +8,12 @@ def show_jobseeker_menu(auth=None):
     if auth.current_user is None or str(getattr(auth.current_user, "role", "")).upper() != "JOB_SEEKER":
         raise PermissionError("This account does not have job seeker privileges.")
 
-    seeker = JobSeeker(auth.data_manager, auth.current_user.user_id)
+    seeker = JobSeeker(
+        auth.data_manager,
+        auth.current_user.user_id,
+        auth.current_user.name,
+        getattr(auth.current_user, "cv", None),
+    )
 
     while True:
         print("\n=== NexHire Job Seeker Dashboard ===")
