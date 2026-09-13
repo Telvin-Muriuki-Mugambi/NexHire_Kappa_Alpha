@@ -1,90 +1,21 @@
+"""Expose command-line administration actions for authenticated admins."""
+
 import argparse
+import sys
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from Models.Admin import AdminManager
 from Models.Auth import Auth, AuthorizationError
 from Models.DataManager import DataManager
 
 
-# def _run_admin_dashboard(auth):
-#     if auth is None:
-#         auth = Auth(DataManager(Path(__file__).resolve().parents[1] / "Data"))
-
-#     if auth.current_user is None:
-#         raise AuthorizationError("No authenticated user found for the admin dashboard.")
-
-#     if getattr(auth.current_user, "role", "").upper() != "ADMIN":
-#         raise AuthorizationError("This account does not have admin privileges.")
-
-#     manager = AdminManager()
-
-#     while True:
-#         print("\n=== NexHire Admin Dashboard ===")
-#         print("1. List users")
-#         print("2. Create user")
-#         print("3. Delete user")
-#         print("4. Review pending jobs")
-#         print("5. Approve job")
-#         print("6. Post opportunity")
-#         print("Q. Quit")
-
-#         choice = input("Choose an option: ").strip().upper()
-
-#         if choice == "Q":
-#             print("Returning to the app.")
-#             return 0
-
-#         if choice == "1":
-#             users = manager.manage_user("list")
-#             print(f"\n--- Registered Users ({len(users)}) ---")
-#             for user in users:
-#                 print(f"ID: {user.get('user_id')} | Name: {user.get('username', user.get('name'))} | Role: {user.get('role')}")
-
-#         elif choice == "2":
-#             username = input("Username: ").strip()
-#             role = input("Role (JOB_SEEKER / EMPLOYER / ADMIN): ").strip().upper()
-#             created = manager.manage_user("create", username=username, role=role)
-#             print(f"User created successfully! ID: {created['user_id']}")
-
-#         elif choice == "3":
-#             user_id = input("User ID to delete: ").strip()
-#             manager.manage_user("delete", user_id=user_id)
-#             print("User deletion attempted.")
-
-#         elif choice == "4":
-#             pending_jobs = manager.review_opportunity(auth.current_user)
-#             print(f"\n--- Pending Jobs ({len(pending_jobs)}) ---")
-#             for job in pending_jobs:
-#                 print(f"ID: {job.get('job_id')} | Title: {job.get('title')} | Company: {job.get('company')}")
-
-#         elif choice == "5":
-#             job_id = input("Job ID to approve: ").strip()
-#             success = manager.approve_job(job_id, auth.current_user)
-#             print("Job successfully approved!" if success else "Approval failed or job already approved.")
-
-#         elif choice == "6":
-#             title = input("Job title: ").strip()
-#             description = input("Job description: ").strip()
-#             company = input("Company: ").strip()
-#             job = manager.post_opportunity(title=title, description=description, company=company, admin_id=str(auth.current_user.user_id))
-#             print(f"Opportunity posted successfully! ID: {job['job_id']} [Status: {job['status']}]")
-
-#         else:
-#             print("Please choose one of the listed options.")
-
-
-# def run_command(command, auth):
-#     if command in {None, "interactive"}:
-#         return _run_admin_dashboard(auth)
-#     return 0
-
-
-# def admin_menu(auth):
-#     print("\nAdmin privileges detected. Opening admin dashboard...\n")
-#     return run_command("interactive", auth)
-
 
 def main(auth=None):
+    """Parse and execute admin user-management or job-management commands."""
     parser = argparse.ArgumentParser(description="NexHire Kappa Alpha CLI Interface")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 

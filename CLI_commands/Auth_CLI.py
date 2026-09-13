@@ -1,18 +1,26 @@
+"""Provide command-line entry points for authentication and navigation."""
+
 import argparse
+import sys
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from Models.Auth import Auth
 from Models.DataManager import DataManager
 
-from .Landing import landing
-from .Login import login
-from .Register import register
+from flow.Landing import landing
+from flow.Login import login
+from flow.Register import register
 
 #Commands the user can interact with for assistance
 COMMANDS = ("interactive", "register", "login")
 
 
 def build_parser():
+    """Build the parser for interactive, registration, and login commands."""
     parser = argparse.ArgumentParser(
         prog="nexhire",
         description="Connect young talent to opportunity.",
@@ -25,11 +33,13 @@ def build_parser():
 
 
 def create_auth(data_dir=None):
+    """Create authentication services connected to the application data directory."""
     data_path = Path(data_dir) if data_dir else Path(__file__).resolve().parents[1] / "Data"
     return Auth(DataManager(data_path))
 
 
 def run_command(command, auth):
+    """Dispatch one authentication command using an existing auth session."""
     if command == "interactive":
         landing(auth)
         return 0
@@ -39,6 +49,7 @@ def run_command(command, auth):
 
 
 def run_cli(argv=None, data_dir=None):
+    """Parse CLI arguments and run the selected authentication workflow."""
     parser = build_parser()
     args = parser.parse_args(argv)
     auth = create_auth(data_dir)

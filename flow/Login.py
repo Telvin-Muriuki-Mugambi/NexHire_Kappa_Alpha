@@ -1,13 +1,17 @@
+"""Collect credentials and authenticate users through the Auth service."""
+
 from Models.Auth import Auth, AuthenticationError
 from Models.DataManager import DataManager
 from pathlib import Path
 
 import getpass
 def _default_auth():
+    """Create an authentication service backed by the default data directory."""
     data_dir = Path(__file__).resolve().parents[1] / "Data"
     return Auth(DataManager(data_dir))
 
 def login(auth=None):
+    """Prompt for credentials and return the authenticated user or None."""
     auth = auth or _default_auth()
     try: 
 

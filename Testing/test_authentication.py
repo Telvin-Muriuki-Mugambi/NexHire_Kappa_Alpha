@@ -1,13 +1,17 @@
+"""Test registration, login, logout, duplicate emails, and role checks."""
+
 import pytest
 from Models.Auth import Auth, AuthenticationError, AuthorizationError, DuplicateEmailError
 
 
 @pytest.fixture
 def auth():
+    """Create an in-memory authentication service for each test."""
     return Auth()
 
 
 def register_user(auth, role="JOB_SEEKER"):
+    """Register the shared test user with the requested role."""
     return auth.register("Ada", "ada@example.com", "0712345678", "secret", role)
 
 #Tests to see if the password is hashed before storing

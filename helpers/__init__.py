@@ -1,3 +1,5 @@
+"""Reusable validation helpers for account registration."""
+
 from .Validate_Password import validate_password
 from .Verify_Email import verify_email
 

@@ -1,5 +1,14 @@
+"""Offer search, CV upload, and help commands for job seekers."""
+
 import argparse
-from jobseeker import JobSeeker
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from Models.jobseeker import JobSeeker
 
 def show_user_guide():
     """Displays friendly, step-by-step help for users who get stuck."""
@@ -26,6 +35,7 @@ def show_user_guide():
     print("═" * 48 + "\n")
 
 def interactive_search(seeker):
+    """Collect interactive filters and display matching approved jobs."""
     print("\n" + "═" * 40)
     print("        🔍 JOB SEARCH FILTER MENU        ")
     print("═" * 40)
@@ -70,13 +80,14 @@ def interactive_search(seeker):
         print("📭 No jobs match your criteria. Try different filters!")
     else:
         for job in results:
-            print(f"\n🔹 ID: {job['id']} | {job['title']}")
+            print(f"\n🔹 ID: {job['job_id']} | {job['title']}")
             print(f"   📍 Location : {job['location']}")
-            print(f"   ⌛ Type     : {job['type']}")
+            print(f"   ⌛ Type     : {job.get('availability', '')}")
             print(f"   🛠️ Skills   : {', '.join(job['skills'])}")
             print("   " + "─" * 40)
 
 def main():
+    """Parse and execute a job-seeker command or open its interactive menu."""
     parser = argparse.ArgumentParser(
         description="NexHire Kappa Alpha Job Seeker CLI",
         epilog="Tip: Run 'python jobseekercli.py guide' if you get stuck!"
@@ -113,7 +124,7 @@ def main():
         if not results:
             print("No jobs match your criteria.")
         for job in results:
-            print(f"ID: {job['id']} | {job['title']} ({job['location']}) - {job['type']}")
+            print(f"ID: {job['job_id']} | {job['title']} ({job['location']}) - {job.get('availability', '')}")
             print(f"   Skills: {', '.join(job['skills'])}")
             
     elif args.command == "upload":

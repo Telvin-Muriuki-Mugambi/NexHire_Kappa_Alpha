@@ -1,3 +1,5 @@
+"""Test JSON initialization, user persistence, job persistence, and loading."""
+
 import json
 
 import pytest
@@ -8,6 +10,7 @@ from Models.User import User
 
 
 class TestDataManager:
+	"""Exercise DataManager behavior using isolated temporary collections."""
 	@pytest.fixture
 	def manager(self, tmp_path):
 		return DataManager(tmp_path)

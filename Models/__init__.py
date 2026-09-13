@@ -1,1 +1,1 @@
-"""Application data models."""
+"""Domain models and persistence services for the NexHire application."""

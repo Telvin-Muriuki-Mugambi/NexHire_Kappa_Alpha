@@ -1,7 +1,11 @@
+"""Test command parser options and authentication command dispatch."""
+
 from flow.CLI import build_parser, run_command
 
 
 class FakeAuth:
+    """Minimal auth stand-in used to test command dispatch."""
+
     pass
 
 

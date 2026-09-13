@@ -1,14 +1,19 @@
+"""Interactive dashboard for administrator user and job management."""
+
 from Models.Admin import AdminManager
 
 
-def main(auth=None):
+def show_admin_menu(auth=None):
+    """Display admin actions and execute them for the authenticated admin."""
     if auth is None:
         raise ValueError("An authenticated admin user is required.")
 
     if auth.current_user is None or str(getattr(auth.current_user, "role", "")).upper() != "ADMIN":
         raise PermissionError("This account does not have admin privileges.")
 
-    manager = AdminManager()
+    manager = AdminManager(
+        data_dir=auth.data_manager.data_dir if auth.data_manager is not None else None
+    )
 
     while True:
         print("\n=== NexHire Admin Dashboard ===")

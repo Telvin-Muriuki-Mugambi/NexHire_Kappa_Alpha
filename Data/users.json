@@ -1,69 +1,53 @@
 [
-  {
-    "user_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
-    "username": "AdminTest",
-    "role": "admin"
-  },
-  {
-    "user_id": 7625,
-    "name": "Muriuki Telvin Mugambi",
-    "email": "wewe@gmail.com",
-    "phone_number": "254113729771",
-    "role": "JOB_SEEKER",
-    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
-  },
-  {
-    "user_id": 1642,
-    "name": "Muriuki Telvin Davis Mugambi",
-    "email": "mimi@gmail.com",
-    "phone_number": "25452455422",
-    "role": "EMPLOYER",
-    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
-  },
-  {
-    "user_id": 9219,
-    "name": "John Doe",
-    "email": "john@gmail.com",
-    "phone_number": "254123456",
-    "role": "EMPLOYER",
-    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
-  },
-  {
-    "user_id": 6561,
-    "name": "admin101",
-    "email": "admin101@gmail.com",
-    "phone_number": "254000000",
-    "role": "ADMIN",
-    "password_hash": "13d28164b8ff012a45df7d5f1bc19caf593e979a702ec66cc8977819b5623501"
-  },
-  {
-    "user_id": 7988,
-    "name": "Jane Doe",
-    "email": "qwerty@gmail.com",
-    "phone_number": "23456789876543",
-    "role": "EMPLOYER",
-    "password_hash": "6faf759346a3fda7b2c49101d0d1f9723465f7f073bf3997ebae3b524ecc872f"
-  },
-  {
-    "user_id": "7947",
-    "username": "stinah",
-    "email": "stinah@gmail.com",
-    "phone": "254721426564",
-    "role": "EMPLOYER"
-  },
-  {
-    "user_id": "4518",
-    "username": "elias",
-    "email": "elias@gmail.com",
-    "phone": "25421805822",
-    "role": "EMPLOYER"
-  },
-  {
-    "user_id": 9349,
-    "name": "mark doe",
-    "email": "mark@gmail.com",
-    "phone_number": "25432323232",
-    "role": "EMPLOYER",
-    "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
-  }
+    {
+        "user_id": 6561,
+        "name": "admin101",
+        "email": "admin101@gmail.com",
+        "phone_number": "254000000",
+        "role": "ADMIN",
+        "password_hash": "13d28164b8ff012a45df7d5f1bc19caf593e979a702ec66cc8977819b5623501"
+    },
+    {
+        "user_id": 1640,
+        "name": "Muriuki Telvin Davis Mugambi",
+        "email": "telvin@gmail.com",
+        "phone_number": "25412345678",
+        "role": "JOB_SEEKER",
+        "cv": "Models/jobseekers_cv's/1640_Muriuki_Telvin_Davis_Mugambi.pdf",
+        "password_hash": "d37cbda1d59fe5c25371f356b940d984535afe0b9f51d222c755232a0af83363"
+    },
+    {
+        "user_id": 1887,
+        "name": "Muriuki Derrick Munene",
+        "email": "derrick@gmail.com",
+        "phone_number": "25487654321",
+        "role": "EMPLOYER",
+        "cv": null,
+        "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+    },
+    {
+        "user_id": 5095,
+        "name": "john doe",
+        "email": "john@gmail.com",
+        "phone_number": "234567897",
+        "role": "JOB_SEEKER",
+        "cv": "Data/Jobseeker_cvs/5095_john_doe.pdf",
+        "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+    },
+    {
+        "user_id": 4332,
+        "name": "jane doe",
+        "email": "jane@gmail.com",
+        "phone_number": "1234567890",
+        "role": "EMPLOYER",
+        "cv": null,
+        "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+    },
+    {
+        "user_id": "4962",
+        "username": "peter",
+        "email": "peter@gmail.com",
+        "phone": "23456789",
+        "role": "JOB_SEEKER"
+    }
 ]
