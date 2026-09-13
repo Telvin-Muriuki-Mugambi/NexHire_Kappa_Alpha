@@ -71,3 +71,16 @@ class JobSeeker:
         print(f"   📁 {os.path.abspath(destination_path)}")
         return destination_path
 
+
+
+if __name__ == "__main__":
+    job_seeker()
+        
+               
+
+
+    
+
+    
+
+
