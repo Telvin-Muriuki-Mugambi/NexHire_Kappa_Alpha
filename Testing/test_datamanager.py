@@ -55,6 +55,25 @@ class TestDataManager:
 		assert loaded[0].to_dict() == user.to_dict()
 		assert loaded[0].verify_password("secret")
 
+	def test_load_users_accepts_legacy_username_records(self, manager):
+		manager.users_file.write_text(
+			json.dumps([
+				{"user_id": "legacy-admin", "username": "AdminTest", "role": "admin"},
+				{
+					"user_id": 1001,
+					"name": "Ada",
+					"email": "ada@example.com",
+					"phone_number": "0712345678",
+					"role": "JOB_SEEKER",
+					"password_hash": "hash",
+				},
+			])
+		)
+
+		loaded = manager.load_users()
+		assert [user.name for user in loaded] == ["AdminTest", "Ada"]
+		assert all(isinstance(user, User) for user in loaded)
+
 	def test_load_jobs_recreates_job_instance(self, manager, job):
 		manager.save_job(job)
 

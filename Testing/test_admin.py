@@ -1,7 +1,9 @@
 #Test file for the admin
 import json
 import pytest
-from Models.Admin import AdminManager, BaseManager
+from Models.Admin import Admin, AdminManager, BaseManager
+from Models.Auth import Auth
+from Models.User import User
 
 @pytest.fixture
 def admin_manager(tmp_path, monkeypatch):
@@ -38,6 +40,70 @@ def test_admin_manager_overrides_parent_description():
 
 def test_admin_class_properties():
     assert hasattr(AdminManager, "USERS_FILE") and hasattr(AdminManager, "JOBS_FILE")
+
+
+def test_admin_inherits_user_and_preserves_role_data():
+    admin = Admin("Admin User", "admin@example.com", "0712345678", "secret")
+    assert isinstance(admin, User)
+    assert isinstance(admin, Admin)
+    assert admin.role == "ADMIN"
+    assert admin.user_id is not None
+
+
+def test_admin_menu_uses_authenticated_admin_user(monkeypatch):
+    from flow.Admin_CLI import admin_menu
+
+    auth = Auth()
+    admin = auth.register("Admin User", "admin@example.com", "0712345678", "secret", "ADMIN")
+    auth.current_user = admin
+
+    called = {}
+
+    def fake_run(command, auth_obj):
+        called["auth"] = auth_obj
+        return 0
+
+    monkeypatch.setattr("flow.Admin_CLI.run_command", fake_run)
+    monkeypatch.setattr("builtins.input", lambda prompt="": "q")
+
+    assert admin_menu(auth) == 0
+    assert called["auth"] is auth
+
+
+def test_landing_passes_authenticated_admin_to_admin_cli(monkeypatch):
+    from flow.Landing import admin_menu
+
+    auth = Auth()
+    auth.current_user = auth.register("Admin User", "admin@example.com", "0712345678", "secret", "ADMIN")
+    called = {}
+
+    def fake_main(auth_obj=None):
+        called["auth"] = auth_obj
+        return 0
+
+    monkeypatch.setattr("flow.Admin_Dashboard.main", fake_main)
+    monkeypatch.setattr("builtins.input", lambda prompt="": "Q")
+
+    assert admin_menu(auth) == 0
+    assert called["auth"] is auth
+
+
+def test_landing_passes_authenticated_job_seeker_to_jobseeker_dashboard(monkeypatch):
+    from flow.Landing import landing
+
+    auth = Auth()
+    auth.current_user = auth.register("Jane Doe", "jane@example.com", "0712345678", "secret", "JOB_SEEKER")
+    called = {}
+
+    def fake_main(auth_obj=None):
+        called["auth"] = auth_obj
+        return 0
+
+    monkeypatch.setattr("flow.JobSeeker_Dashboard.main", fake_main)
+    monkeypatch.setattr("builtins.input", lambda prompt="": "Q")
+
+    assert landing(auth) == 0
+    assert called["auth"] is auth
 
 
 def test_get_default_paths_is_class_method():

@@ -1,10 +1,33 @@
 import json
 import os
 import uuid
+import random
+from pathlib import Path
+
+from Models.DataManager import DataManager
+from Models.User import User
+
+
+class Admin(User):
+    """User subclass with admin-level permissions and role-aware access."""
+
+    def __init__(self, name, email, phone, password, user_id=None):
+        super().__init__(name, email, phone, password, user_id=user_id)
+        self.role = "ADMIN"
+
+    def is_admin(self):
+        return True
+
 
 class BaseManager:
     USERS_FILE = "Data/users.json"
     JOBS_FILE = "Data/jobs.json"
+
+    def __init__(self, data_dir=None):
+        base_dir = Path(data_dir) if data_dir is not None else Path(self.USERS_FILE).parent
+        self.data_manager = DataManager(base_dir)
+        self.USERS_FILE = str(self.data_manager.users_file)
+        self.JOBS_FILE = str(self.data_manager.jobs_file)
 
     def get_manager_description(self):
         return "Base Data Manager System"
@@ -47,14 +70,21 @@ class AdminManager(BaseManager):
         }
 
     def _check_admin(self, user):
-        if str(user.get("role", "")).lower() != "admin":
-            raise PermissionError("User does not have admin privileges.")
+        if hasattr(user, "role"):
+            role = str(user.role).upper()
+            if role == "ADMIN":
+                return
+        if isinstance(user, dict):
+            role = str(user.get("role", "")).upper()
+            if role == "ADMIN":
+                return
+        raise PermissionError("User does not have admin privileges.")
 
     def manage_user(self, action, user_id=None, **user_data):
         users = self._load_data(self.USERS_FILE)
 
         if action == "create":
-            user = {"user_id": str(uuid.uuid4()), **user_data}
+            user = {"user_id": str(random.randint(1000, 9999)), **user_data}
             users.append(user)
             self._save_data(self.USERS_FILE, users)
             return user
@@ -62,28 +92,23 @@ class AdminManager(BaseManager):
         if action in {"read", "list"}:
             if user_id is None:
                 return users
-            return next(
-                (user for user in users if user.get("user_id") == user_id),
-                None,
-            )
+            target_id = str(user_id)
+            return next((user for user in users if str(user.get("user_id")) == target_id), None)
 
         if action == "update":
-            user = next(
-                (user for user in users if user.get("user_id") == user_id),
-                None,
-            )
-            if user is None:
+            if user_id is None:
                 return None
-
-            user.update(user_data)
-            self._save_data(self.USERS_FILE, users)
-            return user
+            target_id = str(user_id)
+            for user in users:
+                if str(user.get("user_id")) == target_id:
+                    user.update(user_data)
+                    self._save_data(self.USERS_FILE, users)
+                    return user
+            return None
 
         if action == "delete":
-            remaining = [
-                user for user in users
-                if user.get("user_id") != user_id
-            ]
+            target_id = str(user_id)
+            remaining = [user for user in users if str(user.get("user_id")) != target_id]
             self._save_data(self.USERS_FILE, remaining)
             return len(remaining) < len(users)
 

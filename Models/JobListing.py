@@ -1,5 +1,6 @@
 import random
 
+
 class JobListing:
    def __init__(
        self,
@@ -78,6 +79,19 @@ class JobListing:
            status=record.get("status", "PENDING"),
        )
 
+   @staticmethod
+   def load_jobs(data_manager=None):
+       if data_manager is None:
+           raise ValueError("A DataManager instance is required to load job listings.")
+       from Models.DataManager import DataManager
+       if not isinstance(data_manager, DataManager):
+           raise TypeError("data_manager must be a DataManager instance.")
+       return data_manager.load_jobs()
 
+   def save(self, data_manager):
+       from Models.DataManager import DataManager
+       if not isinstance(data_manager, DataManager):
+           raise TypeError("data_manager must be a DataManager instance.")
+       data_manager.save_job(self)
 
 
