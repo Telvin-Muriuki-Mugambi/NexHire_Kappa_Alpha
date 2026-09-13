@@ -1,4 +1,8 @@
-from Models.User import User
+from flow.CLI import run_cli
 
-user1 = User("Telvin", "telvin@gmail.com", "2345432", "dcdceee")
-user1._hash_password()
+
+def main(argv=None):
+    return run_cli(argv)
+
+if __name__ == "__main__":
+    raise SystemExit(main())
