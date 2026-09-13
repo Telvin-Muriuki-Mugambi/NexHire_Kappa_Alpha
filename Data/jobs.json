@@ -1,10 +1,27 @@
 [
-    {
-        "job_id": "a22b536c-c926-4152-98ac-74207406713a",
-        "title": "Software Engineer",
-        "description": "Python & React development",
-        "company": "NexHire",
-        "admin_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
-        "status": "APPROVED"
-    }
+  {
+    "job_id": "a22b536c-c926-4152-98ac-74207406713a",
+    "title": "Software Engineer",
+    "description": "Python & React development",
+    "company": "NexHire",
+    "admin_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
+    "status": "APPROVED"
+  },
+  {
+    "job_id": 2998,
+    "title": "BackEnd Software Developer",
+    "description": "Lorem Ipsum",
+    "location": "Nairobi, Kenya",
+    "skills": [
+      "Python",
+      "Java",
+      "SQL"
+    ],
+    "pay_rate": 20000.0,
+    "experience_level": "entry",
+    "availability": "full time",
+    "status": "PENDING",
+    "employer_id": 9219,
+    "company_name": "John Doe"
+  }
 ]

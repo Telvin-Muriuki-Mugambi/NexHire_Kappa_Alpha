@@ -119,7 +119,15 @@ class DataManager:
 
 
    def load_jobs(self):
-       return [JobListing.from_dict(record) for record in self._read_records(self.jobs_file)]
+       jobs = []
+       for record in self._read_records(self.jobs_file):
+           if not isinstance(record, dict):
+               continue
+           try:
+               jobs.append(JobListing.from_dict(record))
+           except (KeyError, TypeError, ValueError):
+               continue
+       return jobs
 
 
    def get_job_by_id(self, job_id):
