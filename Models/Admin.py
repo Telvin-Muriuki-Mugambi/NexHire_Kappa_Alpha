@@ -2,6 +2,20 @@ import json
 import os
 import uuid
 
+from Models.User import User
+
+
+class Admin(User):
+    """User subclass with admin-level permissions and role-aware access."""
+
+    def __init__(self, name, email, phone, password, user_id=None):
+        super().__init__(name, email, phone, password, user_id=user_id)
+        self.role = "ADMIN"
+
+    def is_admin(self):
+        return True
+
+
 class BaseManager:
     USERS_FILE = "Data/users.json"
     JOBS_FILE = "Data/jobs.json"
@@ -47,8 +61,15 @@ class AdminManager(BaseManager):
         }
 
     def _check_admin(self, user):
-        if str(user.get("role", "")).lower() != "admin":
-            raise PermissionError("User does not have admin privileges.")
+        if hasattr(user, "role"):
+            role = str(user.role).upper()
+            if role == "ADMIN":
+                return
+        if isinstance(user, dict):
+            role = str(user.get("role", "")).upper()
+            if role == "ADMIN":
+                return
+        raise PermissionError("User does not have admin privileges.")
 
     def manage_user(self, action, user_id=None, **user_data):
         users = self._load_data(self.USERS_FILE)

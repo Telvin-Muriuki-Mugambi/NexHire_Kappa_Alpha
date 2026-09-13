@@ -25,7 +25,18 @@ class User:
 
    @classmethod
    def from_dict(cls, record):
-       user = cls(record["name"], record["email"], record["phone_number"], "", user_id=record["user_id"])
+       if "name" in record and "email" in record and "phone_number" in record:
+           name = record["name"]
+           email = record["email"]
+           phone = record["phone_number"]
+       elif "username" in record:
+           name = record["username"]
+           email = record.get("email", f"{record.get('username', 'unknown').lower()}@legacy.local")
+           phone = record.get("phone_number", "")
+       else:
+           raise KeyError("User record is missing required identity fields")
+
+       user = cls(name, email, phone, "", user_id=record.get("user_id"))
        user.role = record.get("role")
        user._password_hash = record.get("password_hash", user._password_hash)
        return user

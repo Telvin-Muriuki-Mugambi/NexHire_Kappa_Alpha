@@ -1,10 +1,9 @@
 [
-
-    {
-        "user_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
-        "username": "AdminTest",
-        "role": "admin"
-    },
+  {
+    "user_id": "1e2e189b-ede7-4d46-8146-7c440cc29a33",
+    "username": "AdminTest",
+    "role": "admin"
+  },
   {
     "user_id": 7625,
     "name": "Muriuki Telvin Mugambi",
@@ -44,6 +43,13 @@
     "phone_number": "23456789876543",
     "role": "EMPLOYER",
     "password_hash": "6faf759346a3fda7b2c49101d0d1f9723465f7f073bf3997ebae3b524ecc872f"
+  },
+  {
+    "user_id": 3477,
+    "name": "admin102",
+    "email": "admin102@gmail.com",
+    "phone_number": "234565432",
+    "role": "ADMIN",
+    "password_hash": "13d28164b8ff012a45df7d5f1bc19caf593e979a702ec66cc8977819b5623501"
   }
-
 ]

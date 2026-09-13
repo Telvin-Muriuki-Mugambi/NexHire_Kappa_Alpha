@@ -1,6 +1,21 @@
 import colorama
 from colorama import Fore, Style
 
+
+def admin_menu(auth):
+    from .Admin_Dashboard import main as admin_main
+
+    print("\nAdmin privileges detected. Opening admin dashboard...\n")
+    return admin_main(auth)
+
+
+def jobseeker_menu(auth):
+    from .JobSeeker_Dashboard import main as dashboard_main
+
+    print("\nJob seeker privileges detected. Opening dashboard...\n")
+    return dashboard_main(auth)
+
+
 def landing(auth=None):
     if auth is None:
         from Models.Auth import Auth
@@ -37,6 +52,12 @@ def landing(auth=None):
     while True:
         if auth.current_user is not None:
             current = auth.current_user
+            role = str(getattr(current, "role", "")).upper()
+            if role == "ADMIN":
+                return admin_menu(auth)
+            if role == "JOB_SEEKER":
+                return jobseeker_menu(auth)
+
             print(f"Signed in as {current.name} ({current.role.replace('_', ' ').title()})\n")
             print("[L] Logout  [Q] Quit")
         else:
@@ -55,6 +76,7 @@ def landing(auth=None):
             return
         else:
             print("\nPlease choose one of the options shown above.")
+
 
 if __name__ == "__main__":
     landing()

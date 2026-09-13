@@ -67,7 +67,15 @@ class DataManager:
 
 
    def load_users(self):
-       return [User.from_dict(record) for record in self._read_records(self.users_file)]
+       users = []
+       for record in self._read_records(self.users_file):
+           if not isinstance(record, dict):
+               continue
+           try:
+               users.append(User.from_dict(record))
+           except (KeyError, TypeError, ValueError):
+               continue
+       return users
 
 
    def load_jobs(self):
