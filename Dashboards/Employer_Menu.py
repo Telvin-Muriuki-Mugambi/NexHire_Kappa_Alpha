@@ -36,14 +36,22 @@ def show_employer_menu(auth=None):
             print(f"{index}. {job.display_info()}")
         print("Q. Return to employer menu")
 
-        selection = input("Choose a job: ").strip().upper()
+        selection = input("Enter the job ID (or list number): ").strip().upper()
         if selection == "Q":
             return
-        if not selection.isdigit() or not 1 <= int(selection) <= len(employer.my_jobs):
+        if not selection.isdigit():
             print("Please choose one of the listed jobs.")
             return
 
-        selected_job = employer.my_jobs[int(selection) - 1]
+        selected_job = next(
+            (job for job in employer.my_jobs if str(job.job_id) == selection),
+            None,
+        )
+        if selected_job is None and 1 <= int(selection) <= len(employer.my_jobs):
+            selected_job = employer.my_jobs[int(selection) - 1]
+        if selected_job is None:
+            print("That job ID does not belong to one of your listings.")
+            return
         while True:
             applicants = auth.data_manager.load_applicants(selected_job.job_id)
             print(f"\n--- Applicants for {selected_job.title} ---")
