@@ -2,7 +2,7 @@ import random
 
 
 class JobListing:
- feature/employer-implementation
+
     def __init__(self, title, salary, location, employer_id, company_name):
         self.job_id = random.randint(1000, 9999)
         self.title = title
@@ -14,97 +14,95 @@ class JobListing:
     def display_info(self):
         return f"ID: {self.job_id} | {self.title} at {self.company_name} | Salary: KES {self.salary} | Location: {self.location}"
 
-   def __init__(
-       self,
-       title,
-       description,
-       location,
-       skills,
-       pay_rate,
-       experience_level,
-       availability,
-       job_id=None,
-       status="PENDING",
-   ):
-       if pay_rate < 0:
-           raise ValueError("pay_rate cannot be negative")
-       if experience_level.lower() not in {"entry", "mid", "senior"}:
-           raise ValueError("invalid experience level")
-       self.job_id = job_id if job_id is not None else random.randint(1000, 9999)
-       self.title = title
-       self.description = description
-       self.location = location
-       self.skills = skills
-       self.pay_rate = pay_rate
-       self.experience_level = experience_level
-       self.availability = availability
-       self.status = status
+    def __init__(
+        self,
+        title,
+        description,
+        location,
+        skills,
+        pay_rate,
+        experience_level,
+        availability,
+        job_id=None,
+        status="PENDING",
+    ):
+        if pay_rate < 0:
+            raise ValueError("pay_rate cannot be negative")
+        if experience_level.lower() not in {"entry", "mid", "senior"}:
+            raise ValueError("invalid experience level")
+        self.job_id = job_id if job_id is not None else random.randint(1000, 9999)
+        self.title = title
+        self.description = description
+        self.location = location
+        self.skills = skills
+        self.pay_rate = pay_rate
+        self.experience_level = experience_level
+        self.availability = availability
+        self.status = status
 
 
-   def approve(self):
-       self.status = "APPROVED"
+    def approve(self):
+        self.status = "APPROVED"
 
 
-   def reject(self):
-       self.status = "REJECTED"
+    def reject(self):
+        self.status = "REJECTED"
 
 
-   def matches_criteria(self, filters):
-       if "location" in filters and filters["location"].lower() not in self.location.lower():
-           return False
-       if "skills" in filters:
-           listing_skills = {skill.lower() for skill in self.skills}
-           if not all(skill.lower() in listing_skills for skill in filters["skills"]):
-               return False
-       if "min_pay" in filters and self.pay_rate < filters["min_pay"]:
-           return False
-       if "availability" in filters and self.availability.lower() != filters["availability"].lower():
-           return False
-       return True
+    def matches_criteria(self, filters):
+        if "location" in filters and filters["location"].lower() not in self.location.lower():
+            return False
+        if "skills" in filters:
+            listing_skills = {skill.lower() for skill in self.skills}
+            if not all(skill.lower() in listing_skills for skill in filters["skills"]):
+                return False
+        if "min_pay" in filters and self.pay_rate < filters["min_pay"]:
+            return False
+        if "availability" in filters and self.availability.lower() != filters["availability"].lower():
+            return False
+        return True
 
 
-   def to_dict(self):
-       return {
-           "job_id": self.job_id,
-           "title": self.title,
-           "description": self.description,
-           "location": self.location,
-           "skills": self.skills,
-           "pay_rate": self.pay_rate,
-           "experience_level": self.experience_level,
-           "availability": self.availability,
-           "status": self.status,
-       }
+    def to_dict(self):
+        return {
+            "job_id": self.job_id,
+            "title": self.title,
+            "description": self.description,
+            "location": self.location,
+            "skills": self.skills,
+            "pay_rate": self.pay_rate,
+            "experience_level": self.experience_level,
+            "availability": self.availability,
+            "status": self.status,
+        }
 
 
-   @classmethod
-   def from_dict(cls, record):
-       return cls(
-           record["title"],
-           record["description"],
-           record["location"],
-           record["skills"],
-           record["pay_rate"],
-           record["experience_level"],
-           record["availability"],
-           job_id=record["job_id"],
-           status=record.get("status", "PENDING"),
-       )
+    @classmethod
+    def from_dict(cls, record):
+        return cls(
+            record["title"],
+            record["description"],
+            record["location"],
+            record["skills"],
+            record["pay_rate"],
+            record["experience_level"],
+            record["availability"],
+            job_id=record["job_id"],
+            status=record.get("status", "PENDING"),
+        )
 
-   @staticmethod
-   def load_jobs(data_manager=None):
-       if data_manager is None:
-           raise ValueError("A DataManager instance is required to load job listings.")
-       from Models.DataManager import DataManager
-       if not isinstance(data_manager, DataManager):
-           raise TypeError("data_manager must be a DataManager instance.")
-       return data_manager.load_jobs()
+    @staticmethod
+    def load_jobs(data_manager=None):
+        if data_manager is None:
+            raise ValueError("A DataManager instance is required to load job listings.")
+        from Models.DataManager import DataManager
+        if not isinstance(data_manager, DataManager):
+            raise TypeError("data_manager must be a DataManager instance.")
+        return data_manager.load_jobs()
 
-   def save(self, data_manager):
-       from Models.DataManager import DataManager
-       if not isinstance(data_manager, DataManager):
-           raise TypeError("data_manager must be a DataManager instance.")
-       data_manager.save_job(self)
+    def save(self, data_manager):
+        from Models.DataManager import DataManager
+        if not isinstance(data_manager, DataManager):
+            raise TypeError("data_manager must be a DataManager instance.")
+        data_manager.save_job(self)
 
-
- development
