@@ -30,12 +30,14 @@ def main(auth=None):
             users = manager.manage_user("list")
             print(f"\n--- Registered Users ({len(users)}) ---")
             for user in users:
-                print(f"ID: {user.get('user_id')} | Name: {user.get('username', user.get('name'))} | Role: {user.get('role')}")
+                print(f"ID: {user.get('user_id')} | Name: {user.get('username', user.get('name'))} | Email: {user.get('email')} | Phone Number: {user.get('phone')} | Role: {user.get('role')}")
 
         elif choice == "2":
-            username = input("Username: ").strip()
+            name = input("Username: ").strip()
+            email = input("Email address: ").strip()
+            phone = input("Phone Number: ").strip()
             role = input("Role (JOB_SEEKER / EMPLOYER / ADMIN): ").strip().upper()
-            created = manager.manage_user("create", username=username, role=role)
+            created = manager.manage_user("create", username=name, email = email, phone = phone, role=role)
             print(f"User created successfully! ID: {created['user_id']}")
 
         elif choice == "3":
