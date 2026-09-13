@@ -1,4 +1,11 @@
-from Models.User import User
+"""Start the NexHire command-line application."""
 
-user1 = User("Telvin", "telvin@gmail.com", "2345432", "dcdceee")
-user1._hash_password()
+from CLI_commands.Auth_CLI import run_cli
+
+
+def main(argv=None):
+    """Run the authentication CLI with the supplied command-line arguments."""
+    return run_cli(argv)
+
+if __name__ == "__main__":
+    raise SystemExit(main())

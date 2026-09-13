@@ -1,0 +1,10 @@
+[
+    {
+        "user_id": 6561,
+        "name": "admin101",
+        "email": "admin101@gmail.com",
+        "phone_number": "254000000",
+        "role": "ADMIN",
+        "password_hash": "13d28164b8ff012a45df7d5f1bc19caf593e979a702ec66cc8977819b5623501"
+    }
+]
