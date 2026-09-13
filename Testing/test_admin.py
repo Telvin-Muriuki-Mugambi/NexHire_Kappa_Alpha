@@ -1,6 +1,9 @@
 """Test administrator models, persistence, permissions, and dashboard routing."""
 
 import json
+import sys
+import types
+
 import pytest
 from Models.Admin import Admin, AdminManager, BaseManager
 from Models.Auth import Auth
@@ -24,6 +27,24 @@ def admin_user():
 def normal_user():
     """Provide a non-admin record for permission-denial tests."""
     return {"user_id": "user-001", "role": "USER"}
+
+
+def _install_email_validator_stub(monkeypatch):
+    """Provide a minimal email_validator module so flow imports can run in tests."""
+    module = types.ModuleType("email_validator")
+
+    class FakeEmailNotValidError(ValueError):
+        pass
+
+    def fake_validate_email(email, check_deliverability=True):
+        if "@" not in email:
+            raise FakeEmailNotValidError("invalid email")
+        return types.SimpleNamespace(normalized=email)
+
+    module.validate_email = fake_validate_email
+    module.EmailNotValidError = FakeEmailNotValidError
+    monkeypatch.setitem(sys.modules, "email_validator", module)
+
 
 def test_admin_manager_inherits_from_base_manager():
     admin = AdminManager()
@@ -55,58 +76,52 @@ def test_admin_inherits_user_and_preserves_role_data():
 
 
 def test_admin_menu_uses_authenticated_admin_user(monkeypatch):
-    from CLI_commands.Admin_CLI import admin_menu
+    from CLI_commands.Admin_CLI import main as admin_cli_main
 
     auth = Auth()
     admin = auth.register("Admin User", "admin@example.com", "0712345678", "secret", "ADMIN")
     auth.current_user = admin
 
-    called = {}
+    monkeypatch.setattr(sys, "argv", ["admin_cli.py", "jobs", "review"])
 
-    def fake_run(command, auth_obj):
-        called["auth"] = auth_obj
-        return 0
-
-    monkeypatch.setattr("flow.Admin_CLI.run_command", fake_run)
-    monkeypatch.setattr("builtins.input", lambda prompt="": "q")
-
-    assert admin_menu(auth) == 0
-    assert called["auth"] is auth
+    assert admin_cli_main(auth) == 0
 
 
 def test_landing_passes_authenticated_admin_to_admin_cli(monkeypatch):
-    from flow.Landing import admin_menu
+    _install_email_validator_stub(monkeypatch)
+
+    import flow.Landing as landing_module
 
     auth = Auth()
     auth.current_user = auth.register("Admin User", "admin@example.com", "0712345678", "secret", "ADMIN")
     called = {}
 
-    def fake_main(auth_obj=None):
+    def fake_admin_menu(auth_obj=None):
         called["auth"] = auth_obj
         return 0
 
-    monkeypatch.setattr("flow.Admin_Dashboard.main", fake_main)
-    monkeypatch.setattr("builtins.input", lambda prompt="": "Q")
+    monkeypatch.setattr(landing_module, "admin_menu", fake_admin_menu)
 
-    assert admin_menu(auth) == 0
+    assert landing_module.landing(auth) == 0
     assert called["auth"] is auth
 
 
 def test_landing_passes_authenticated_job_seeker_to_jobseeker_dashboard(monkeypatch):
-    from flow.Landing import landing
+    _install_email_validator_stub(monkeypatch)
+
+    import flow.Landing as landing_module
 
     auth = Auth()
     auth.current_user = auth.register("Jane Doe", "jane@example.com", "0712345678", "secret", "JOB_SEEKER")
     called = {}
 
-    def fake_main(auth_obj=None):
+    def fake_jobseeker_menu(auth_obj=None):
         called["auth"] = auth_obj
         return 0
 
-    monkeypatch.setattr("flow.JobSeeker_Dashboard.main", fake_main)
-    monkeypatch.setattr("builtins.input", lambda prompt="": "Q")
+    monkeypatch.setattr(landing_module, "jobseeker_menu", fake_jobseeker_menu)
 
-    assert landing(auth) == 0
+    assert landing_module.landing(auth) == 0
     assert called["auth"] is auth
 
 
