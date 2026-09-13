@@ -10,9 +10,10 @@ class JobSeeker:
 
     cv_file_path = "Models/jobseekers_cv's"
 
-    def __init__(self, data_manager=None, user_id=None):
+    def __init__(self, data_manager=None, user_id=None, name=None):
         self.data_manager = data_manager
         self.user_id = user_id
+        self.name = name
         self.applied_jobs = []
         self.cv_path = None
         self.job_postings = self._load_jobs()
@@ -101,7 +102,7 @@ class JobSeeker:
             return None
 
         os.makedirs(save_directory, exist_ok=True)
-        file_name = os.path.basename(file_path)
+        file_name = self.cv_filename(file_path)
         destination_path = os.path.join(save_directory, file_name)
         shutil.copy(file_path, destination_path)
         self.cv_path = destination_path
@@ -109,6 +110,23 @@ class JobSeeker:
         print("✨ Success! CV copied to target directory:")
         print(f"   📁 {os.path.abspath(destination_path)}")
         return destination_path
+
+    def cv_filename(self, source_path):
+        """Return the required CV filename for this registered job seeker."""
+        if self.user_id is None:
+            raise ValueError("A user ID is required before naming a CV.")
+        safe_name = "_".join(
+            part for part in "".join(
+                character if character.isalnum() else " "
+                for character in str(getattr(self, "name", "job_seeker"))
+            ).split()
+            if part
+        ) or "job_seeker"
+        extension = os.path.splitext(source_path)[1].lower()
+        return f"{self.user_id}_{safe_name}{extension}"
+
+    def upload_registration_cv(self, target_directory=None):
+        return self.upload_file(target_directory)
 
     def upload_cv(self, file_path):
         save_directory = os.path.dirname(file_path) or "."

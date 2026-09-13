@@ -1,0 +1,21 @@
+[
+  {
+    "job_id": 6862,
+    "title": "Software Developer",
+    "description": "Lorem ipsum",
+    "location": "Nairobi Kenya",
+    "skills": [
+      "Python",
+      "React",
+      "HTML",
+      "CSS",
+      "JS"
+    ],
+    "pay_rate": 120000.0,
+    "experience_level": "entry",
+    "availability": "full time",
+    "status": "APPROVED",
+    "employer_id": 1887,
+    "company_name": "Muriuki Derrick Munene"
+  }
+]

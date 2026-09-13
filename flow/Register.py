@@ -2,6 +2,7 @@ from pathlib import Path
 
 from Models.Auth import Auth, AuthenticationError, AuthorizationError, DuplicateEmailError
 from Models.DataManager import DataManager
+from Models.jobseeker import JobSeeker
 from helpers import validate_password, verify_email
 
 
@@ -52,6 +53,20 @@ def register(auth=None):
     except DuplicateEmailError as error:
         print(f"Registration failed: {error}. Please use a different email address.\n")
         return None
+
+    if role == "JOB_SEEKER":
+        seeker = JobSeeker(
+            data_manager=auth.data_manager,
+            user_id=user.user_id,
+            name=user.name,
+        )
+        cv_path = None
+        while cv_path is None:
+            print("A CV is required to complete job seeker registration.")
+            cv_path = seeker.upload_registration_cv()
+        user.cv = cv_path
+        if auth.data_manager is not None:
+            auth.data_manager.save_user(user)
 
     #Information display to user to show what is happening behind the scenes
     print(f"Registered {user.email} as {user.role}\n")
