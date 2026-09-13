@@ -1,3 +1,5 @@
+"""Test employer identity behavior and the legacy CLI action examples."""
+
 import sys
 import os
 import pytest

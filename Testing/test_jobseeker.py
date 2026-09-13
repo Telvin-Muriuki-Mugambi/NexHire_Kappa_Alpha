@@ -1,3 +1,5 @@
+"""Test CV tracking, application tracking, and seeker job searches."""
+
 import sys
 from pathlib import Path
 import pytest

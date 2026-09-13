@@ -1,3 +1,5 @@
+"""Offer search, CV upload, and help commands for job seekers."""
+
 import argparse
 import sys
 from pathlib import Path
@@ -33,6 +35,7 @@ def show_user_guide():
     print("═" * 48 + "\n")
 
 def interactive_search(seeker):
+    """Collect interactive filters and display matching approved jobs."""
     print("\n" + "═" * 40)
     print("        🔍 JOB SEARCH FILTER MENU        ")
     print("═" * 40)
@@ -84,6 +87,7 @@ def interactive_search(seeker):
             print("   " + "─" * 40)
 
 def main():
+    """Parse and execute a job-seeker command or open its interactive menu."""
     parser = argparse.ArgumentParser(
         description="NexHire Kappa Alpha Job Seeker CLI",
         epilog="Tip: Run 'python jobseekercli.py guide' if you get stuck!"

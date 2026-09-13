@@ -1,3 +1,5 @@
+"""Validate password strength and confirmation for account registration."""
+
 import re
 #Library for regular expressions
 import getpass
@@ -14,6 +16,7 @@ import getpass
 password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$'
 
 def validate_password():
+    """Prompt for matching credentials that satisfy the password policy."""
     password = getpass.getpass("Create a password: ")
     confirm_password = getpass.getpass("Confirm your password: ")
 

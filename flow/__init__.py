@@ -1,3 +1,5 @@
+"""Authentication and application-navigation workflows."""
+
 from .Landing import landing
 from .Register import register
 from .Login import login

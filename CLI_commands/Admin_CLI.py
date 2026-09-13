@@ -1,3 +1,5 @@
+"""Expose command-line administration actions for authenticated admins."""
+
 import argparse
 import sys
 from pathlib import Path
@@ -13,6 +15,7 @@ from Models.DataManager import DataManager
 
 
 def main(auth=None):
+    """Parse and execute admin user-management or job-management commands."""
     parser = argparse.ArgumentParser(description="NexHire Kappa Alpha CLI Interface")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 

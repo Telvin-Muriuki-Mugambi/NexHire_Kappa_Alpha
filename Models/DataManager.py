@@ -1,3 +1,5 @@
+"""Persist users, jobs, and applications in JSON-backed collections."""
+
 import json
 from pathlib import Path
 
@@ -23,17 +25,20 @@ class DataManager:
 
    @staticmethod
    def _normalize_id(value):
+       """Convert identifiers to a consistent comparison representation."""
        return str(value)
 
 
    @staticmethod
    def _ensure_file(path):
+       """Create an empty JSON collection file when it does not exist."""
        if not path.exists():
            path.write_text("[]", encoding="utf-8")
 
 
    @staticmethod
    def _read_records(path):
+       """Read a JSON list safely, returning an empty list for invalid content."""
        try:
            content = path.read_text(encoding="utf-8")
            if not content.strip():
@@ -46,10 +51,12 @@ class DataManager:
 
    @staticmethod
    def _write_records(path, records):
+       """Write records to a JSON collection file."""
        path.write_text(json.dumps(records, indent=2), encoding="utf-8")
 
 
    def save_user(self, user):
+       """Insert or replace a serialized user record."""
        records = self._read_records(self.users_file)
        payload = user.to_dict() if hasattr(user, "to_dict") else user
        for index, record in enumerate(records):
@@ -62,6 +69,7 @@ class DataManager:
 
 
    def update_user(self, user_id, **updates):
+       """Update a persisted user by identifier and return the record."""
        records = self._read_records(self.users_file)
        target_id = self._normalize_id(user_id)
        for index, record in enumerate(records):
@@ -73,6 +81,7 @@ class DataManager:
 
 
    def delete_user(self, user_id):
+       """Delete a persisted user and report whether a record was removed."""
        records = self._read_records(self.users_file)
        target_id = self._normalize_id(user_id)
        remaining = [record for record in records if self._normalize_id(record.get("user_id")) != target_id]
@@ -81,6 +90,7 @@ class DataManager:
 
 
    def get_user_by_id(self, user_id):
+       """Load one user by identifier or return None."""
        target_id = self._normalize_id(user_id)
        for record in self._read_records(self.users_file):
            if self._normalize_id(record.get("user_id")) == target_id:
@@ -89,6 +99,7 @@ class DataManager:
 
 
    def save_job(self, job):
+       """Insert or replace a serialized job listing."""
        records = self._read_records(self.jobs_file)
        payload = job.to_dict() if hasattr(job, "to_dict") else job
        for index, record in enumerate(records):
@@ -101,6 +112,7 @@ class DataManager:
 
 
    def update_job(self, job_id, **updates):
+       """Update a persisted job by identifier and return the listing."""
        records = self._read_records(self.jobs_file)
        target_id = self._normalize_id(job_id)
        for record in records:
@@ -112,6 +124,7 @@ class DataManager:
 
 
    def delete_job(self, job_id):
+       """Delete a persisted job and report whether a record was removed."""
        records = self._read_records(self.jobs_file)
        target_id = self._normalize_id(job_id)
        remaining = [record for record in records if self._normalize_id(record.get("job_id")) != target_id]
@@ -120,6 +133,7 @@ class DataManager:
 
 
    def load_users(self):
+       """Load valid user objects while skipping malformed legacy records."""
        users = []
        for record in self._read_records(self.users_file):
            if not isinstance(record, dict):
@@ -132,6 +146,7 @@ class DataManager:
 
 
    def load_jobs(self):
+       """Load valid JobListing objects from the jobs collection."""
        jobs = []
        for record in self._read_records(self.jobs_file):
            if not isinstance(record, dict):
@@ -144,6 +159,7 @@ class DataManager:
 
 
    def get_job_by_id(self, job_id):
+       """Load one job listing by identifier or return None."""
        target_id = self._normalize_id(job_id)
        for record in self._read_records(self.jobs_file):
            if self._normalize_id(record.get("job_id")) == target_id:
@@ -152,6 +168,7 @@ class DataManager:
 
 
    def save_application(self, job_id, user_id, name, cv=None):
+       """Persist an applicant record unless this user already applied to the job."""
        records = self._read_records(self.applications_file)
        application = {
            "job_id": job_id,
@@ -171,6 +188,7 @@ class DataManager:
 
 
    def load_applicants(self, job_id):
+       """Return all persisted applicant records for a job identifier."""
        target_id = self._normalize_id(job_id)
        return [
            record for record in self._read_records(self.applications_file)

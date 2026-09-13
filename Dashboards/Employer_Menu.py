@@ -1,3 +1,5 @@
+"""Interactive dashboard for employer job and applicant management."""
+
 import sys
 import os
 
@@ -8,6 +10,7 @@ from Models.JobListing import JobListing
 
 
 def show_employer_menu(auth=None):
+    """Display employer actions for posting jobs and viewing applicants."""
     if auth is None:
         raise ValueError("An authenticated employer user is required.")
 

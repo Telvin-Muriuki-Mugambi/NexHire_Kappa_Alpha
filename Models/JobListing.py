@@ -1,7 +1,10 @@
+"""Define the validated job listing domain object and its filters."""
+
 import random
 
 
 class JobListing:
+    """Represent a job opportunity with status, ownership, and search metadata."""
 
     def __init__(
         self,
@@ -18,6 +21,7 @@ class JobListing:
         company_name=None,
         salary=None,
     ):
+        """Create a listing while validating pay and experience-level values."""
         if isinstance(pay_rate, str) and not isinstance(skills, (list, tuple)):
             salary = description
             employer_id = skills
@@ -46,22 +50,27 @@ class JobListing:
 
     @property
     def salary(self):
+        """Return the pay rate using the legacy salary property name."""
         return self.pay_rate
 
     def display_info(self):
+        """Return a concise human-readable summary of the listing."""
         company = f" at {self.company_name}" if self.company_name else ""
         return f"ID: {self.job_id} | {self.title}{company} | Salary: KES {self.pay_rate} | Location: {self.location}"
 
 
     def approve(self):
+        """Mark the listing as approved for job-seeker visibility."""
         self.status = "APPROVED"
 
 
     def reject(self):
+        """Mark the listing as rejected."""
         self.status = "REJECTED"
 
 
     def matches_criteria(self, filters):
+        """Return whether the listing satisfies the supplied search filters."""
         if "location" in filters and filters["location"].lower() not in self.location.lower():
             return False
         if "skills" in filters:
@@ -76,6 +85,7 @@ class JobListing:
 
 
     def to_dict(self):
+        """Serialize the listing into a JSON-compatible dictionary."""
         return {
             "job_id": self.job_id,
             "title": self.title,
@@ -93,6 +103,7 @@ class JobListing:
 
     @classmethod
     def from_dict(cls, record):
+        """Recreate a listing from a stored JSON-compatible dictionary."""
         return cls(
             record["title"],
             record.get("description", ""),
@@ -109,6 +120,7 @@ class JobListing:
 
     @staticmethod
     def load_jobs(data_manager=None):
+        """Load listings through a validated DataManager instance."""
         if data_manager is None:
             raise ValueError("A DataManager instance is required to load job listings.")
         from Models.DataManager import DataManager
@@ -117,6 +129,7 @@ class JobListing:
         return data_manager.load_jobs()
 
     def save(self, data_manager):
+        """Persist this listing through a validated DataManager instance."""
         from Models.DataManager import DataManager
         if not isinstance(data_manager, DataManager):
             raise TypeError("data_manager must be a DataManager instance.")

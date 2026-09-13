@@ -1,4 +1,5 @@
-#Test file for the admin
+"""Test administrator models, persistence, permissions, and dashboard routing."""
+
 import json
 import pytest
 from Models.Admin import Admin, AdminManager, BaseManager
@@ -7,6 +8,7 @@ from Models.User import User
 
 @pytest.fixture
 def admin_manager(tmp_path, monkeypatch):
+    """Create an admin manager using temporary JSON files."""
     u, j = tmp_path / "users.json", tmp_path / "jobs.json"
     u.write_text("[]"); j.write_text("[]")
     monkeypatch.setattr(AdminManager, "USERS_FILE", str(u))
@@ -15,10 +17,12 @@ def admin_manager(tmp_path, monkeypatch):
 
 @pytest.fixture
 def admin_user():
+    """Provide a minimal authenticated admin record for manager tests."""
     return {"user_id": "admin-001", "role": "ADMIN"}
 
 @pytest.fixture
 def normal_user():
+    """Provide a non-admin record for permission-denial tests."""
     return {"user_id": "user-001", "role": "USER"}
 
 def test_admin_manager_inherits_from_base_manager():

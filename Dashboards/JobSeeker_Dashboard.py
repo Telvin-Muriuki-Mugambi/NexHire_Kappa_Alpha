@@ -1,7 +1,10 @@
+"""Interactive dashboard for viewing and applying to approved jobs."""
+
 from Models.jobseeker import JobSeeker
 
 
 def show_jobseeker_menu(auth=None):
+    """Display job-seeker actions for the authenticated job seeker."""
     if auth is None:
         raise ValueError("An authenticated job seeker user is required.")
 

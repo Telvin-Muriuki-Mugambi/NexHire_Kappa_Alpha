@@ -1,3 +1,5 @@
+"""Register users, collect credentials, and require job-seeker CV uploads."""
+
 from pathlib import Path
 
 from Models.Auth import Auth, AuthenticationError, AuthorizationError, DuplicateEmailError
@@ -7,11 +9,13 @@ from helpers import validate_password, verify_email
 
 
 def _default_auth():
+    """Create an authentication service backed by the default data directory."""
     data_dir = Path(__file__).resolve().parents[1] / "Data"
     return Auth(DataManager(data_dir))
 
 
 def register(auth=None):
+    """Register a job seeker or employer and automatically sign them in."""
     #We need to know the user role as soon as possible
     #Check if user wants to register as a job seeker or as an employer
     user_role = input(

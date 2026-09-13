@@ -1,3 +1,5 @@
+"""Provide a direct command-line entry point for employer workflows."""
+
 import argparse
 import sys
 from pathlib import Path
@@ -13,11 +15,13 @@ from Dashboards.Employer_Menu import show_employer_menu
 
 
 def create_auth(data_dir=None):
+    """Create an employer CLI authentication session for the selected data directory."""
     data_path = Path(data_dir) if data_dir else PROJECT_ROOT / "Data"
     return Auth(DataManager(data_path))
 
 
 def build_parser():
+    """Build the employer command parser."""
     parser = argparse.ArgumentParser(
         prog="nexhire-employer",
         description="NexHire employer command interface.",
@@ -29,6 +33,7 @@ def build_parser():
 
 
 def main(argv=None):
+    """Authenticate an employer and open the employer dashboard."""
     args = build_parser().parse_args(argv)
     if args.command in {None, "help"}:
         build_parser().print_help()

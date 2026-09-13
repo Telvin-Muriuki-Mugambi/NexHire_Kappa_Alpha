@@ -1,3 +1,5 @@
+"""Define administrator users and persistence-backed admin management actions."""
+
 import json
 import os
 import uuid
@@ -16,10 +18,12 @@ class Admin(User):
         self.role = "ADMIN"
 
     def is_admin(self):
+        """Return whether this user has administrator privileges."""
         return True
 
 
 class BaseManager:
+    """Provide shared JSON file-management utilities for administrative services."""
     USERS_FILE = "Data/users.json"
     JOBS_FILE = "Data/jobs.json"
 
@@ -30,6 +34,7 @@ class BaseManager:
         self.JOBS_FILE = str(self.data_manager.jobs_file)
 
     def get_manager_description(self):
+        """Return a human-readable description of this manager type."""
         return "Base Data Manager System"
 
     def _ensure_file_exists(self, file_path):
@@ -56,10 +61,12 @@ class BaseManager:
 
 
 class AdminManager(BaseManager):
+    """Authorize admin operations over users and job opportunities."""
     USERS_FILE = "Data/users.json"
     JOBS_FILE = "Data/jobs.json"
 
     def get_manager_description(self):
+        """Return the admin manager's human-readable description."""
         return "Admin-Level Security and Opportunity Manager"
 
     @classmethod
@@ -70,6 +77,7 @@ class AdminManager(BaseManager):
         }
 
     def _check_admin(self, user):
+        """Raise PermissionError unless the supplied user has the ADMIN role."""
         if hasattr(user, "role"):
             role = str(user.role).upper()
             if role == "ADMIN":
@@ -81,6 +89,7 @@ class AdminManager(BaseManager):
         raise PermissionError("User does not have admin privileges.")
 
     def manage_user(self, action, user_id=None, **user_data):
+        """Create, read, update, or delete user records for admin workflows."""
         users = self._load_data(self.USERS_FILE)
 
         if action == "create":
@@ -122,6 +131,7 @@ class AdminManager(BaseManager):
         admin_id,
         status="pending",
     ):
+        """Create and persist a pending opportunity posted by an administrator."""
         if "=" in status:
             status = status.split("=", 1)[1]
 
@@ -146,6 +156,7 @@ class AdminManager(BaseManager):
     post_opportinity = post_opportunity
 
     def review_opportunity(self, user):
+        """Return pending opportunities after verifying administrator access."""
         self._check_admin(user)
         jobs = self.data_manager.load_jobs()
         return [
@@ -154,6 +165,7 @@ class AdminManager(BaseManager):
         ]
 
     def approve_job(self, job_id, user):
+        """Confirm and persist approval for a pending job listing."""
         self._check_admin(user)
         job = self.data_manager.get_job_by_id(job_id)
 

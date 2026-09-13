@@ -1,3 +1,5 @@
+"""Test job listing defaults, validation, status changes, and filtering."""
+
 import pytest
 
 from Models.JobListing import JobListing
@@ -5,6 +7,7 @@ from Models.JobListing import JobListing
 
 @pytest.fixture
 def listing():
+	"""Create a reusable valid pending job listing."""
 	return JobListing(
 		"Python Developer",
 		"Build backend services",

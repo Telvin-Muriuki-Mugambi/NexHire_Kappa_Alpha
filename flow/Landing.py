@@ -1,3 +1,5 @@
+"""Route users from the welcome screen to authentication and role dashboards."""
+
 try:
     import colorama
     from colorama import Fore, Style
@@ -16,6 +18,7 @@ except ModuleNotFoundError:
 
 
 def admin_menu(auth):
+    """Open the administrator dashboard with the active authentication session."""
     from Dashboards.Admin_Dashboard import show_admin_menu as admin_main
 
     print("\nAdmin privileges detected. Opening admin menu...\n")
@@ -23,18 +26,21 @@ def admin_menu(auth):
 
 
 def jobseeker_menu(auth):
+    """Open the job-seeker dashboard with the active authentication session."""
     from Dashboards.JobSeeker_Dashboard import show_jobseeker_menu as dashboard_main
 
     print("\nJob seeker privileges detected. Opening menu...\n")
     return dashboard_main(auth)
 
 def employer_menu(auth):
+    """Open the employer dashboard with the active authentication session."""
     from Dashboards.Employer_Menu import show_employer_menu as employer_main
 
     print("\nEmployer priviledges detected. Opening menu...")
     return employer_main(auth)
 
 def landing(auth=None):
+    """Run the top-level welcome, login, registration, and role-routing loop."""
     if auth is None:
         from Models.Auth import Auth
         from Models.DataManager import DataManager

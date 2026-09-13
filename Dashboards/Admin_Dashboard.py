@@ -1,7 +1,10 @@
+"""Interactive dashboard for administrator user and job management."""
+
 from Models.Admin import AdminManager
 
 
 def show_admin_menu(auth=None):
+    """Display admin actions and execute them for the authenticated admin."""
     if auth is None:
         raise ValueError("An authenticated admin user is required.")
 

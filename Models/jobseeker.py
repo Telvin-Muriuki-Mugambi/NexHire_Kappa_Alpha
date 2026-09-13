@@ -1,3 +1,5 @@
+"""Provide job-seeker search, application, and CV upload behavior."""
+
 import os
 import shutil
 import tkinter as tk
@@ -6,11 +8,13 @@ from Models.JobListing import JobListing
 
 
 class JobSeeker:
+    """Represent a seeker who can search approved jobs and submit applications."""
 
 
     cv_file_path = "Data/Jobseeker_cvs"
 
     def __init__(self, data_manager=None, user_id=None, name=None, cv=None):
+        """Initialize seeker identity, CV metadata, and available job data."""
         self.data_manager = data_manager
         self.user_id = user_id
         self.name = name
@@ -19,6 +23,7 @@ class JobSeeker:
         self.job_postings = self._load_jobs()
 
     def _load_jobs(self):
+        """Load jobs from the configured DataManager or return an empty list."""
         if self.data_manager is None:
             return []
         return self.data_manager.load_jobs()
@@ -28,6 +33,7 @@ class JobSeeker:
         return job.to_dict() if isinstance(job, JobListing) else job
 
     def available_jobs(self):
+        """Return only listings whose persisted status is APPROVED."""
         self.job_postings = self._load_jobs()
         approved = []
         for job in self.job_postings:
@@ -66,9 +72,11 @@ class JobSeeker:
         return filtered_list
 
     def search_jobs(self, keyword):
+        """Search approved listings using a keyword across their fields."""
         return self.filter_jobs(any_keyword=keyword)
 
     def apply_job(self, job_id):
+        """Apply to an approved job and persist the seeker's application."""
         approved_jobs = self.available_jobs()
         job = next((job for job in approved_jobs if str(job.job_id) == str(job_id)), None)
         if self.data_manager is None:
@@ -134,9 +142,11 @@ class JobSeeker:
         return f"{self.user_id}_{safe_name}{extension}"
 
     def upload_registration_cv(self, target_directory=None):
+        """Upload the CV used to complete job-seeker registration."""
         return self.upload_file(target_directory)
 
     def upload_cv(self, file_path):
+        """Record a directly supplied CV path for compatibility with CLI usage."""
         save_directory = os.path.dirname(file_path) or "."
         self.cv_path = file_path
         return file_path
