@@ -2,44 +2,82 @@ import os
 import shutil
 import tkinter as tk
 from tkinter import filedialog
+from Models.JobListing import JobListing
+
 
 class JobSeeker:
-    job_postings = [
-        {"id": 1, "title": "Senior Python Developer", "location": "Remote", "type": "Full-time", "skills": ["Python", "Django", "SQL"]},
-        {"id": 2, "title": "Data Analyst", "location": "New York, NY", "type": "Full-time", "skills": ["Python", "Excel", "Tableau"]},
-        {"id": 3, "title": "Frontend Engineer", "location": "Remote", "type": "Contract", "skills": ["JavaScript", "React", "CSS"]},
-        {"id": 4, "title": "Junior Python Developer", "location": "Austin, TX", "type": "Full-time", "skills": ["Python", "Flask"]},
-        {"id": 5, "title": "DevOps Engineer", "location": "Remote", "type": "Part-time", "skills": ["AWS", "Docker", "Linux"]},
-    ]
+
 
     cv_file_path = "Models/jobseekers_cv's"
+
+    def __init__(self, data_manager=None, user_id=None):
+        self.data_manager = data_manager
+        self.user_id = user_id
+        self.applied_jobs = []
+        self.cv_path = None
+        self.job_postings = self._load_jobs()
+
+    def _load_jobs(self):
+        if self.data_manager is None:
+            return []
+        return self.data_manager.load_jobs()
+
+    @staticmethod
+    def _as_dict(job):
+        return job.to_dict() if isinstance(job, JobListing) else job
+
+    def available_jobs(self):
+        self.job_postings = self._load_jobs()
+        approved = []
+        for job in self.job_postings:
+            status = job.status if isinstance(job, JobListing) else job.get("status", "")
+            if str(status).upper() == "APPROVED":
+                approved.append(job)
+        return approved
 
     def filter_jobs(self, any_keyword=None, title=None, location=None, job_type=None, skill=None):
         """Filters job postings based on provided parameters."""
         filtered_list = []
-        for job in self.job_postings:
+        for job in self.available_jobs():
+            record = self._as_dict(job)
             if any_keyword:
-                combined_text = f"{job['title']} {job['location']} {job['type']} {' '.join(job['skills'])}".lower()
+                combined_text = f"{record.get('title', '')} {record.get('location', '')} {record.get('availability', record.get('type', ''))} {' '.join(record.get('skills', []))} {record.get('company_name', '')}".lower()
                 if any_keyword.lower() not in combined_text:
                     continue
 
-            if title and title.lower() not in job.get("title", "").lower():
+            if title and title.lower() not in record.get("title", "").lower():
                 continue
                 
-            if location and location.lower() not in job.get("location", "").lower():
+            if location and location.lower() not in record.get("location", "").lower():
                 continue
                         
-            if job_type and job_type.lower() not in job.get("type", "").lower():
+            job_type_value = record.get("availability", record.get("type", ""))
+            if job_type and job_type.lower() not in job_type_value.lower():
                 continue
                 
             if skill:
-                skills = [s.lower() for s in job.get("skills", [])]
+                skills = [s.lower() for s in record.get("skills", [])]
                 if skill.lower() not in skills:
                     continue
 
-            filtered_list.append(job)
+            filtered_list.append(record)
 
         return filtered_list
+
+    def search_jobs(self, keyword):
+        return self.filter_jobs(any_keyword=keyword)
+
+    def apply_job(self, job_id):
+        approved_jobs = self.available_jobs()
+        job = next((job for job in approved_jobs if str(job.job_id) == str(job_id)), None)
+        if self.data_manager is None:
+            self.applied_jobs.append(job_id)
+            return job_id
+        if job is None:
+            raise ValueError("You can only apply for an approved job with that ID.")
+        if str(job.job_id) not in {str(applied_id) for applied_id in self.applied_jobs}:
+            self.applied_jobs.append(job.job_id)
+        return job.job_id
 
     def upload_file(self, target_directory=None):
         """Opens native OS file chooser and copies selected CV to predetermined destination directory."""
@@ -66,10 +104,19 @@ class JobSeeker:
         file_name = os.path.basename(file_path)
         destination_path = os.path.join(save_directory, file_name)
         shutil.copy(file_path, destination_path)
+        self.cv_path = destination_path
 
         print("✨ Success! CV copied to target directory:")
         print(f"   📁 {os.path.abspath(destination_path)}")
         return destination_path
+
+    def upload_cv(self, file_path):
+        save_directory = os.path.dirname(file_path) or "."
+        self.cv_path = file_path
+        return file_path
+
+
+job_seeker = JobSeeker
 
 
 

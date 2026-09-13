@@ -65,5 +65,13 @@
     "phone_number": "25432323232",
     "role": "EMPLOYER",
     "password_hash": "bbcd78a083cc62711b5b412ca1d71f81e1aa58b1099e7f5f54080936af3a3488"
+  },
+  {
+    "user_id": 5203,
+    "name": "peter parker",
+    "email": "peter@gmail.com",
+    "phone_number": "34567987654892",
+    "role": "EMPLOYER",
+    "password_hash": "bc44f414f643bf3193a7e0740ea5b5be9655dfa31493655db02a0841f3f4dd25"
   }
 ]
