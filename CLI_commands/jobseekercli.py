@@ -1,5 +1,5 @@
 import argparse
-from jobseeker import JobSeeker
+from Models.jobseeker import JobSeeker
 
 def show_user_guide():
     """Displays friendly, step-by-step help for users who get stuck."""

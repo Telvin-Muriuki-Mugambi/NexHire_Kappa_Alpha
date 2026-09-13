@@ -1,4 +1,4 @@
-from flow.Auth_CLI import run_cli
+from CLI_commands.Auth_CLI import run_cli
 
 
 def main(argv=None):

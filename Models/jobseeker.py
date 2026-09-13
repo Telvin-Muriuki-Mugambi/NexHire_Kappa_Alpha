@@ -8,7 +8,7 @@ from Models.JobListing import JobListing
 class JobSeeker:
 
 
-    cv_file_path = "Models/jobseekers_cv's"
+    cv_file_path = "Data/Jobseeker_cvs"
 
     def __init__(self, data_manager=None, user_id=None, name=None, cv=None):
         self.data_manager = data_manager
@@ -87,22 +87,23 @@ class JobSeeker:
             self.applied_jobs.append(job.job_id)
         return job.job_id
 
-    def upload_file(self, target_directory=None):
+    def upload_file(self, target_directory=None, file_path=None):
         """Opens native OS file chooser and copies selected CV to predetermined destination directory."""
         save_directory = target_directory or self.cv_file_path
 
-        print("\n📂 Opening file selection window...")
-        root = tk.Tk()
-        root.withdraw()
-        root.attributes("-topmost", True)
+        if file_path is None:
+            print("\n📂 Opening file selection window...")
+            root = tk.Tk()
+            root.withdraw()
+            root.attributes("-topmost", True)
 
-        file_path = filedialog.askopenfilename(
-            title="Select CV / Resume to Upload",
-            filetypes=[
-                ("Supported CV Formats", "*.pdf *.docx *.txt"),
-                ("All Files", "*.*")
-            ]
-        )
+            file_path = filedialog.askopenfilename(
+                title="Select CV / Resume to Upload",
+                filetypes=[
+                    ("Supported CV Formats", "*.pdf *.docx *.txt"),
+                    ("All Files", "*.*")
+                ]
+            )
 
         if not file_path:
             print("⚠️ Upload cancelled: No file selected.")

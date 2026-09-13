@@ -4,9 +4,9 @@ from pathlib import Path
 from Models.Auth import Auth
 from Models.DataManager import DataManager
 
-from .Landing import landing
-from .Login import login
-from .Register import register
+from flow.Landing import landing
+from flow.Login import login
+from flow.Register import register
 
 #Commands the user can interact with for assistance
 COMMANDS = ("interactive", "register", "login")

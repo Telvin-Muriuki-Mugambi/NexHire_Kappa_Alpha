@@ -51,7 +51,7 @@ def test_admin_inherits_user_and_preserves_role_data():
 
 
 def test_admin_menu_uses_authenticated_admin_user(monkeypatch):
-    from flow.Admin_CLI import admin_menu
+    from CLI_commands.Admin_CLI import admin_menu
 
     auth = Auth()
     admin = auth.register("Admin User", "admin@example.com", "0712345678", "secret", "ADMIN")
