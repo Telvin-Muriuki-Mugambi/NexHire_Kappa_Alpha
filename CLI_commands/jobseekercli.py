@@ -8,7 +8,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from Models.Auth import Auth, AuthenticationError
+from Models.DataManager import DataManager
 from Models.jobseeker import JobSeeker
+from flow.Login import login
+from Dashboards.JobSeeker_Dashboard import show_jobseeker_menu
 
 def show_user_guide():
     """Displays friendly, step-by-step help for users who get stuck."""
@@ -86,15 +90,20 @@ def interactive_search(seeker):
             print(f"   🛠️ Skills   : {', '.join(job['skills'])}")
             print("   " + "─" * 40)
 
-def main():
-    """Parse and execute a job-seeker command or open its interactive menu."""
+def create_auth(data_dir=None):
+    """Create a job-seeker CLI authentication session for the selected data directory."""
+    data_path = Path(data_dir) if data_dir else PROJECT_ROOT / "Data"
+    return Auth(DataManager(data_path))
+
+
+def main(argv=None):
+    """Parse and execute a job-seeker command or open its interactive dashboard."""
     parser = argparse.ArgumentParser(
         description="NexHire Kappa Alpha Job Seeker CLI",
         epilog="Tip: Run 'python jobseekercli.py guide' if you get stuck!"
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Search command parser
     search_parser = subparsers.add_parser("search", help="Search and filter job postings")
     search_parser.add_argument("--keyword", help="Filter by any keyword across fields")
     search_parser.add_argument("--title", help="Filter by job title")
@@ -102,14 +111,36 @@ def main():
     search_parser.add_argument("--type", help="Filter by job type (Full-time/Part-time/Contract)")
     search_parser.add_argument("--skill", help="Filter by a specific skill")
 
-    # Upload command parser
     upload_parser = subparsers.add_parser("upload", help="Upload a CV/Resume")
     upload_parser.add_argument("--path", help="Direct file path to CV (optional)")
 
-    # Guide/Help command parser (Catches users when stuck)
     subparsers.add_parser("guide", help="Show a friendly guide on how to use the app")
+    subparsers.add_parser("interactive", help="Log in and open the job seeker dashboard")
 
-    args = parser.parse_args()
+    cli_args = list(sys.argv[1:] if argv is None else argv)
+    if not cli_args:
+        print("Job seeker CLI. Type 'interactive' to open the dashboard, 'guide' to see help, or 'q' to quit.")
+        while True:
+            try:
+                command = input("jobseeker> ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                print("\nJob seeker session ended.")
+                return 1
+
+            if command in {"", None}:
+                continue
+            if command in {"q", "quit", "exit"}:
+                return 0
+            if command == "guide":
+                cli_args = ["guide"]
+                break
+            if command == "interactive":
+                cli_args = ["interactive"]
+                break
+            cli_args = [command]
+            break
+
+    args = parser.parse_args(cli_args)
     seeker = JobSeeker()
 
     if args.command == "search":
@@ -126,15 +157,27 @@ def main():
         for job in results:
             print(f"ID: {job['job_id']} | {job['title']} ({job['location']}) - {job.get('availability', '')}")
             print(f"   Skills: {', '.join(job['skills'])}")
-            
+
     elif args.command == "upload":
         seeker.upload_file(file_path=args.path)
 
     elif args.command == "guide":
         show_user_guide()
-        
+
+    elif args.command == "interactive":
+        auth = create_auth()
+        try:
+            if login(auth) is None:
+                return 1
+            if not auth.has_role("JOB_SEEKER"):
+                print("This account does not have job seeker privileges.")
+                return 1
+            return show_jobseeker_menu(auth)
+        except (AuthenticationError, EOFError, KeyboardInterrupt):
+            print("\nJob seeker session ended.")
+            return 1
+
     else:
-        # Interactive Menu with a Built-in "Stuck?" Help Option
         while True:
             print("\n" + "╔" + "═" * 38 + "╗")
             print("║        🌟 NEXHIRE JOB SEEKER 🌟       ║")
@@ -155,9 +198,10 @@ def main():
                 show_user_guide()
             elif choice == "4":
                 print("\n👋 Thank you for using NexHire. Goodbye!\n")
-                break
+                return 0
             else:
                 print("❌ Invalid option. Please enter 1, 2, 3, or 4.")
+
 
 if __name__ == "__main__":
     main()

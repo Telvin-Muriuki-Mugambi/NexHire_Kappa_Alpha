@@ -34,9 +34,31 @@ def build_parser():
 
 def main(argv=None):
     """Authenticate an employer and open the employer dashboard."""
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    cli_args = list(sys.argv[1:] if argv is None else argv)
+
+    if not cli_args:
+        print("Employer CLI. Type 'interactive' to open the dashboard, 'help' to see commands, or 'q' to quit.")
+        while True:
+            try:
+                command = input("employer> ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                print("\nEmployer session ended.")
+                return 1
+
+            if command in {"", None}:
+                continue
+            if command in {"q", "quit", "exit"}:
+                return 0
+            if command == "help":
+                parser.print_help()
+                continue
+            cli_args = [command]
+            break
+
+    args = parser.parse_args(cli_args)
     if args.command in {None, "help"}:
-        build_parser().print_help()
+        parser.print_help()
         return 0
 
     auth = create_auth()

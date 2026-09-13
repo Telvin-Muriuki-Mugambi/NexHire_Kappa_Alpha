@@ -82,9 +82,16 @@ def test_admin_menu_uses_authenticated_admin_user(monkeypatch):
     admin = auth.register("Admin User", "admin@example.com", "0712345678", "secret", "ADMIN")
     auth.current_user = admin
 
-    monkeypatch.setattr(sys, "argv", ["admin_cli.py", "jobs", "review"])
+    monkeypatch.setattr("CLI_commands.Admin_CLI.create_auth", lambda data_dir=None: auth)
+    monkeypatch.setattr("CLI_commands.Admin_CLI.login", lambda auth_obj: auth_obj.current_user)
 
-    assert admin_cli_main(auth) == 0
+    def fake_show_admin_menu(auth_obj):
+        assert auth_obj is auth
+        return 0
+
+    monkeypatch.setattr("CLI_commands.Admin_CLI.show_admin_menu", fake_show_admin_menu)
+
+    assert admin_cli_main(["interactive"]) == 0
 
 
 def test_landing_passes_authenticated_admin_to_admin_cli(monkeypatch):
