@@ -1,18 +1,30 @@
 """Validate and normalize registration email addresses."""
 
-from email_validator import validate_email, EmailNotValidError
-#A package that provides the tools to validate an email
+import re
+from types import SimpleNamespace
+
+try:
+    from email_validator import validate_email, EmailNotValidError
+except ModuleNotFoundError:
+    class EmailNotValidError(ValueError):
+        """Fallback validation error when email-validator is unavailable."""
+
+    def validate_email(email_str, check_deliverability=True):
+        """Perform basic syntax validation without the optional dependency."""
+        candidate = (email_str or "").strip()
+        pattern = r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$"
+        if not re.fullmatch(pattern, candidate):
+            raise EmailNotValidError("Invalid email address.")
+        return SimpleNamespace(normalized=candidate.lower())
+
+
 def verify_email():
     """Prompt for an email and return its normalized form when valid."""
     email_str = input("Please enter your email address: ")
     try:
-        # Validates syntax and checks if the domain exists
         email_info = validate_email(email_str, check_deliverability=True)
-        
-        # Returns the normalized, clean version of the email
         return email_info.normalized
     except EmailNotValidError as e:
-        # Provides a friendly error message explaining why it failed
         print(f"❌ Invalid email: {str(e)}\n")
         return None
 
