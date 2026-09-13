@@ -45,15 +45,17 @@
         "password_hash": "6faf759346a3fda7b2c49101d0d1f9723465f7f073bf3997ebae3b524ecc872f"
     },
     {
-        "user_id": "2416f292-31ed-4940-ae9e-4c734ad17b1b",
-        "username": "derrick",
-        "role": "JOB_SEEKER"
-    },
-    {
         "user_id": "7947",
         "username": "stinah",
         "email": "stinah@gmail.com",
         "phone": "254721426564",
+        "role": "EMPLOYER"
+    },
+    {
+        "user_id": "4518",
+        "username": "elias",
+        "email": "elias@gmail.com",
+        "phone": "25421805822",
         "role": "EMPLOYER"
     }
 ]

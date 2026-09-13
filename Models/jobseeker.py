@@ -102,32 +102,11 @@ class job_seeker:
         print("✅ Success! CV copied to target directory:")
         print(f"   {os.path.abspath(destination_path)}")
         return destination_path
-    def run(self):
-        """Launches the interactive menu system loop in the terminal."""
-        while True:
-            print("\n==============================")
-            print("   JOB SEEKER CLI APP")
-            print("==============================")
-            print("1. Search Jobs")
-            print("2. Upload CV")
-            print("3. Exit Application")
-
-            choice = input("\nChoose an option (1-3): ").strip()
-
-            if choice == "1":
-                self.search_job()
-            elif choice == "2":
-                self.upload_file()
-            elif choice == "3":
-                print("\nExiting application. Goodbye!")
-                break
-            else:
-                print("Invalid option. Please choose 1, 2, or 3.")
 
 
 
 if __name__ == "__main__":
-    job_seeker().run()
+    job_seeker()
         
                
 
