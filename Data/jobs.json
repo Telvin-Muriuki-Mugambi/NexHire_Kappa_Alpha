@@ -59,5 +59,22 @@
     "status": "PENDING",
     "employer_id": 9219,
     "company_name": "John Doe"
+  },
+  {
+    "job_id": 6712,
+    "title": "qwerty",
+    "description": "asdfg",
+    "location": "kenya",
+    "skills": [
+      "dede",
+      "deded",
+      "a"
+    ],
+    "pay_rate": 28500.0,
+    "experience_level": "entry",
+    "availability": "full time",
+    "status": "APPROVED",
+    "employer_id": 9219,
+    "company_name": "John Doe"
   }
 ]

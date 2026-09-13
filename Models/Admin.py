@@ -122,51 +122,49 @@ class AdminManager(BaseManager):
         admin_id,
         status="pending",
     ):
-        jobs = self._load_data(self.JOBS_FILE)
-
         if "=" in status:
             status = status.split("=", 1)[1]
 
-        job = {
-            "job_id": str(uuid.uuid4()),
-            "title": title,
-            "description": description,
-            "company": company,
-            "admin_id": admin_id,
-            "status": status.upper(),
-        }
+        from Models.JobListing import JobListing
 
-        jobs.append(job)
-        self._save_data(self.JOBS_FILE, jobs)
-        return job
+        job = JobListing(
+            title=title,
+            description=description,
+            location="Not specified",
+            skills=[],
+            pay_rate=0,
+            experience_level="entry",
+            availability="FULL_TIME",
+            job_id=str(uuid.uuid4()),
+            status=status.upper(),
+            employer_id=admin_id,
+            company_name=company,
+        )
+        self.data_manager.save_job(job)
+        return job.to_dict()
 
     post_opportinity = post_opportunity
 
     def review_opportunity(self, user):
         self._check_admin(user)
-        jobs = self._load_data(self.JOBS_FILE)
+        jobs = self.data_manager.load_jobs()
         return [
-            job for job in jobs
-            if job.get("status", "").upper() == "PENDING"
+            job.to_dict() for job in jobs
+            if str(job.status).upper() == "PENDING"
         ]
 
     def approve_job(self, job_id, user):
         self._check_admin(user)
-        jobs = self._load_data(self.JOBS_FILE)
+        job = self.data_manager.get_job_by_id(job_id)
 
-        job = next(
-            (item for item in jobs if item.get("job_id") == job_id),
-            None,
-        )
-
-        if job is None or job.get("status", "").upper() == "APPROVED":
+        if job is None or str(job.status).upper() == "APPROVED":
             return False
 
         confirmation = input("Approve this listing? (yes/no): ")
 
         if confirmation.strip().lower() in {"y", "yes"}:
-            job["status"] = "APPROVED"
-            self._save_data(self.JOBS_FILE, jobs)
+            job.approve()
+            self.data_manager.save_job(job)
             return True
 
         return False

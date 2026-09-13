@@ -98,6 +98,17 @@ class DataManager:
        self._write_records(self.jobs_file, records)
 
 
+   def update_job(self, job_id, **updates):
+       records = self._read_records(self.jobs_file)
+       target_id = self._normalize_id(job_id)
+       for record in records:
+           if self._normalize_id(record.get("job_id")) == target_id:
+               record.update(updates)
+               self._write_records(self.jobs_file, records)
+               return JobListing.from_dict(record)
+       return None
+
+
    def delete_job(self, job_id):
        records = self._read_records(self.jobs_file)
        target_id = self._normalize_id(job_id)
